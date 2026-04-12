@@ -20,17 +20,17 @@ def main():
     first = forecast["properties"]["periods"][0]
     second = forecast["properties"]["periods"][5]
 
-    print(f"Time: {first['startTime']}")
-    print(f"Temp: {first['temperature']} {first['temperatureUnit']}")
-    print(f"Wind: {first['windSpeed']} {first['windDirection']}") 
-    print(f"Percip: {first['probabilityOfPrecipitation']['value']}")
-    print(f"Summary: {first['shortForecast']}")
+    # print(f"Time: {first['startTime']}")
+    # print(f"Temp: {first['temperature']} {first['temperatureUnit']}")
+    # print(f"Wind: {first['windSpeed']} {first['windDirection']}") 
+    # print(f"Percip: {first['probabilityOfPrecipitation']['value']}")
+    # print(f"Summary: {first['shortForecast']}")
     
-    print('\n')
-    print(f"Time: {second['startTime']}")
-    print(f"Temp: {second['temperature']} {second['temperatureUnit']}")
-    print(f"Wind: {second['windSpeed']} {second['windDirection']}") 
-    print(f"Percip: {second['probabilityOfPrecipitation']['value']}")
+    # print('\n')
+    # print(f"Time: {second['startTime']}")
+    # print(f"Temp: {second['temperature']} {second['temperatureUnit']}")
+    # print(f"Wind: {second['windSpeed']} {second['windDirection']}") 
+    # print(f"Percip: {second['probabilityOfPrecipitation']['value']}")
     print(f"Summary: {second['shortForecast']}")
 
     # print("\n--- CURRENT OBSERVATION ---")

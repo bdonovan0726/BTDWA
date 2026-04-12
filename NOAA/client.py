@@ -6,7 +6,7 @@ class NOAAClient:
 
     def __init__(self):
         self.headers = {
-            "User-Agent": "ocean-weather-app (you@example.com)",
+            "User-Agent": "ocean-weather-app (bdonovan0726@gmail.com)",
             "Accept": "application/geo+json"
         }
 
