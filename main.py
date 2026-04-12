@@ -1,6 +1,6 @@
 import json
 from NOAA.client import NOAAClient
-
+from WeatherObjects.WObj import NOAAForecastPoint
 
 
 def main():
@@ -16,9 +16,11 @@ def main():
     print("\n--- HOURLY FORECAST ---")
     forecast = client.get_hourly_forecast(lat, lon)
     #print(json.dumps(forecast, indent=2))
+    AltamonteObj = NOAAForecastPoint(forecast["properties"]["periods"][0])
+    print(AltamonteObj.temp)
 
-    first = forecast["properties"]["periods"][0]
-    second = forecast["properties"]["periods"][5]
+    # first = forecast["properties"]["periods"][0]
+    # second = forecast["properties"]["periods"][5]
 
     # print(f"Time: {first['startTime']}")
     # print(f"Temp: {first['temperature']} {first['temperatureUnit']}")
@@ -31,7 +33,7 @@ def main():
     # print(f"Temp: {second['temperature']} {second['temperatureUnit']}")
     # print(f"Wind: {second['windSpeed']} {second['windDirection']}") 
     # print(f"Percip: {second['probabilityOfPrecipitation']['value']}")
-    print(f"Summary: {second['shortForecast']}")
+    # print(f"Summary: {second['shortForecast']}")
 
     # print("\n--- CURRENT OBSERVATION ---")
     # # Example station (you can swap this later)
