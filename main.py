@@ -16,6 +16,8 @@ def main():
     #in Texas County, MO, middle of nowhere far from cities
     # lat = 37.3516
     # lon = -91.8294
+    userStationsList = []
+    stationForecasts = []
     username = "bdonovan0726@gmail.com"
     
     print("Getting user station info....")
@@ -26,20 +28,40 @@ def main():
         print(f"User ID: {userID}")
         print("Getting station ID' for user")
     
-        userStations = SQConn.getStationsForUser(userID)
+        userStationIDs = SQConn.getStationsForUser(userID)
     
-        if not userStations:
+        if not userStationIDs:
             return
     
-        for statID in userStations:
+        for statID in userStationIDs:
             print(f"Found station {statID[0]} for user")
+            
+            stationInfo = SQConn.getStationInfoByID(statID[0])
+            if not stationInfo:
+                print(f"Unable to locate information from station {statID[0]}")
+                return
+            userStationsList.append((stationInfo[1], stationInfo[4], stationInfo[5]))
+    #exiting the sql connection since no longer needed 
+    #i need to implement some UML modeling
+    for station in userStationsList:
+        print(f"Found info: {station}, calling weather API with coordinates {station[1]}, {station[2]}")
+        statForecastJSON = client.get_hourly_forecast(station[1], station[2])
+        stationForecasts.append(NOAAForecastPoint(statForecastJSON["properties"]["periods"][0], station[0]))
+
+    for forecast in stationForecasts:
+        print(f"Current forecast at {forecast.stationID} as of {forecast.startTime}:")
+        print(f"")
+        print(f"{forecast.shortFore}, {forecast.temp}{forecast.tempUnit} with winds {forecast.windSpeed} at {forecast.windDir}")
+        print(f"Humidity {forecast.humidity}")
+        print()
 
 
-    print("\n--- HOURLY FORECAST ---")
-    forecast = client.get_hourly_forecast(lat, lon)
-    #print(json.dumps(forecast, indent=2))
-    AltamonteObj = NOAAForecastPoint(forecast["properties"]["periods"][0])
-    print(AltamonteObj.temp)
+
+    # print("\n--- HOURLY FORECAST ---")
+    # forecast = client.get_hourly_forecast(lat, lon)
+    # #print(json.dumps(forecast, indent=2))
+    # AltamonteObj = NOAAForecastPoint(forecast["properties"]["periods"][0])
+    # print(AltamonteObj.temp)
 
     # first = forecast["properties"]["periods"][0]
     # second = forecast["properties"]["periods"][5]

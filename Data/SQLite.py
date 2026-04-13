@@ -36,5 +36,17 @@ class SQLiteconn:
 
         return results
         
+    def getStationInfoByID(self, statID : str):
+        query = """
+            SELECT * 
+            FROM NOAAstations
+            where id = ?
+        """
+        
+        self.cursor.execute(query, (statID,))
+        results = self.cursor.fetchone()
+        
+        return results
+        
     def __exit__(self, ev, et, evb):
         self.DBConn.close()
