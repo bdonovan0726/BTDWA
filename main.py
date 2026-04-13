@@ -19,10 +19,21 @@ def main():
     username = "bdonovan0726@gmail.com"
     
     print("Getting user station info....")
-    SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
-    userID = SQConn.getUserIDbyUserName(username)
+    #SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
+    with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
+        userID = SQConn.getUserIDbyUserName(username)
     
-    print(f"User ID: {userID}")
+        print(f"User ID: {userID}")
+        print("Getting station ID' for user")
+    
+        userStations = SQConn.getStationsForUser(userID)
+    
+        if not userStations:
+            return
+    
+        for statID in userStations:
+            print(f"Found station {statID[0]} for user")
+
 
     print("\n--- HOURLY FORECAST ---")
     forecast = client.get_hourly_forecast(lat, lon)
