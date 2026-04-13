@@ -12,6 +12,9 @@ def main():
     #at my apartment in altamonte
     lat = 28.6647
     lon = -81.3656
+    #in Texas County, MO, middle of nowhere far from cities
+    # lat = 37.3516
+    # lon = -91.8294
 
     print("\n--- HOURLY FORECAST ---")
     forecast = client.get_hourly_forecast(lat, lon)
