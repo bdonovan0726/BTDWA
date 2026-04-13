@@ -22,4 +22,5 @@ class NOAAForecastPoint:
         self.humidity = str(rawData["relativeHumidity"]["value"])
         self.windSpeed = rawData["windSpeed"]
         self.windDir = rawData["windDirection"]
-        
+
+

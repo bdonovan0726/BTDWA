@@ -1,6 +1,7 @@
 import json
 from NOAA.client import NOAAClient
 from WeatherObjects.WObj import NOAAForecastPoint
+from Data.SQLite import SQLiteconn
 
 
 def main():
@@ -15,6 +16,13 @@ def main():
     #in Texas County, MO, middle of nowhere far from cities
     # lat = 37.3516
     # lon = -91.8294
+    username = "bdonovan0726@gmail.com"
+    
+    print("Getting user station info....")
+    SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
+    userID = SQConn.getUserIDbyUserName(username)
+    
+    print(f"User ID: {userID}")
 
     print("\n--- HOURLY FORECAST ---")
     forecast = client.get_hourly_forecast(lat, lon)
