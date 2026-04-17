@@ -32,7 +32,7 @@ class NDBCClient:
         # wdat = dict(zip(headers, values))
         # for k,v in wdat.items():
            # print(k + ": " + v)
-        return NDBCBuoyData(dict(zip(headers, values)))
+        return NDBCBuoyData(dict(zip(headers, values)), "46042")
         #return wdat
 
 

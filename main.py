@@ -9,7 +9,8 @@ from NDBC.NDBCClient import NDBCClient
 def main():
     NDBCcli = NDBCClient()
     #firstBuoyDat = NDBCBuoyData(NDBCcli.getBuoyData("46042"))
-    NDBCcli.getBuoyData("46042")
+    firstObs = NDBCcli.getBuoyData("46042")
+    firstObs.printBuoyData()
     # client = NOAAClient()
     # username = "bdonovan0726@gmail.com"
     # #Example: West Coast (you can change this later)
