@@ -48,5 +48,29 @@ class SQLiteconn:
         
         return results
         
+    def getNDBCBuoysForUser(self, userID : str):
+        query = """
+            SELECT ndbc_id
+            from user_ndbc_buoys
+            where user_id = ?
+        """
+        
+        self.cursor.execute(query, (userID,))
+        results = self.cursor.fetchall()
+        
+        return results
+        
+    def getNDBCBuoyInfo(self, buoyID : str):
+        query = """
+            SELECT *
+            FROM NDBCBuoys
+            where ID = ?
+        """
+        
+        self.cursor.execute(query, (buoyID,))
+        results = self.cursor.fetchone()
+        
+        return results
+        
     def __exit__(self, ev, et, evb):
         self.DBConn.close()

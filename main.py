@@ -9,10 +9,10 @@ from NDBC.NDBCClient import NDBCClient
 def main():
     NDBCcli = NDBCClient()
     #firstBuoyDat = NDBCBuoyData(NDBCcli.getBuoyData("46042"))
-    firstObs = NDBCcli.getBuoyData("46042")
+    firstObs = NDBCcli.getBuoyData("41122")
     firstObs.printBuoyData()
     # client = NOAAClient()
-    # username = "bdonovan0726@gmail.com"
+    username = "bdonovan0726@gmail.com"
     # #Example: West Coast (you can change this later)
     # # lat = 37.7749
     # # lon = -122.4194
@@ -27,10 +27,18 @@ def main():
     
     # print("Getting user station info....")
     # #SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
-    # with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
-        # userID = SQConn.getUserIDbyUserName(username)
+    with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
+        
+        userID = SQConn.getUserIDbyUserName(username)
     
-        # print(f"User ID: {userID}")
+        print(f"User ID: {userID}")
+        print("Getting buoy info for user...")
+        
+        userBuoyIDs = SQConn.getNDBCBuoysForUser(userID)
+        
+        for userBuoyID in userBuoyIDs:
+            print(f"Found {userBuoyID} in user buoy list.  Getting observation data for it.")
+            buoyInfo = SQConn.getNDBCBuoyInfo
         # print("Getting station ID' for user")
     
         # userStationIDs = SQConn.getStationsForUser(userID)
