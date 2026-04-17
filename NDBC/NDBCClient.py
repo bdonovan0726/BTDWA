@@ -29,10 +29,10 @@ class NDBCClient:
         dataLines = [line for line in respLines if not line.startswith('#')]
         values = dataLines[0].split()
         # print(headers)
-        wdat = dict(zip(headers, values))
-        #for k,v in wdat.items():
-         #   print(k + ": " + v)
-        #return NDBCBuoyData(dict(zip(headers, values)))
-        return wdat
+        # wdat = dict(zip(headers, values))
+        # for k,v in wdat.items():
+           # print(k + ": " + v)
+        return NDBCBuoyData(dict(zip(headers, values)))
+        #return wdat
 
 

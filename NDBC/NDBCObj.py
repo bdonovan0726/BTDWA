@@ -9,11 +9,11 @@ class NDBCBuoyData:
         
         self.windSpeed = bData["WSPD"]
         self.windDir = bData["WDIR"]
-        self.windGust = bData["WGST"]
+        self.windGust = bData["GST"]
         
         self.waterTemp = bData["WTMP"]
         self.airTemp = bData["ATMP"]
         
-        self.obsTime = f"UTC: {bData['MM']}-{bData['DD']}-{bData['YY']}-{bData['HH']}-{bData['MM']}"
+        self.obsTime = f"UTC: {bData['MM']}-{bData['DD']}-{bData['#YY']}-{bData['hh']}-{bData['MM']}"
         
         
