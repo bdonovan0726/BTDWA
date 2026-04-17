@@ -2,22 +2,27 @@ import json
 from NOAA.client import NOAAClient
 from WeatherObjects.WObj import NOAAForecastPoint
 from Data.SQLite import SQLiteconn
+from NDBC.NDBCObj import NDBCBuoyData
+from NDBC.NDBCClient import NDBCClient
 
 
 def main():
-    client = NOAAClient()
-    username = "bdonovan0726@gmail.com"
-    #Example: West Coast (you can change this later)
-    # lat = 37.7749
-    # lon = -122.4194
-    #at my apartment in altamonte
-    # lat = 28.6647
-    # lon = -81.3656
-    #in Texas County, MO, middle of nowhere far from cities
-    # lat = 37.3516
-    # lon = -91.8294
-    userStationsList = []
-    stationForecasts = []
+    NDBCcli = NDBCClient()
+    #firstBuoyDat = NDBCBuoyData(NDBCcli.getBuoyData("46042"))
+    NDBCcli.getBuoyData("46042")
+    # client = NOAAClient()
+    # username = "bdonovan0726@gmail.com"
+    # #Example: West Coast (you can change this later)
+    # # lat = 37.7749
+    # # lon = -122.4194
+    # #at my apartment in altamonte
+    # # lat = 28.6647
+    # # lon = -81.3656
+    # #in Texas County, MO, middle of nowhere far from cities
+    # # lat = 37.3516
+    # # lon = -91.8294
+    # userStationsList = []
+    # stationForecasts = []
     
     # print("Getting user station info....")
     # #SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
@@ -78,17 +83,17 @@ def main():
     # print(f"Percip: {second['probabilityOfPrecipitation']['value']}")
     # print(f"Summary: {second['shortForecast']}")
 
-    print("\n--- CURRENT OBSERVATION ---")
-    # Example station (you can swap this later)
-    station_id = "kgry"
+    # print("\n--- CURRENT OBSERVATION ---")
+    # # Example station (you can swap this later)
+    # station_id = "kgry"
 
-    obs = client.get_latest_observation(station_id)
-    print(json.dumps(obs, indent=2))
-    props = obs["properties"]
+    # obs = client.get_latest_observation(station_id)
+    # print(json.dumps(obs, indent=2))
+    # props = obs["properties"]
 
-    print(f"Temp: {props['temperature']['value']}")
-    print(f"Wind Speed: {props['windSpeed']['value']}")
-    print(f"Wind Direction: {props['windDirection']['value']}")
+    # print(f"Temp: {props['temperature']['value']}")
+    # print(f"Wind Speed: {props['windSpeed']['value']}")
+    # print(f"Wind Direction: {props['windDirection']['value']}")
 
 
 if __name__ == "__main__":
