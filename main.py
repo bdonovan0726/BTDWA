@@ -37,8 +37,12 @@ def main():
         userBuoyIDs = SQConn.getNDBCBuoysForUser(userID)
         
         for userBuoyID in userBuoyIDs:
-            print(f"Found {userBuoyID} in user buoy list.  Getting observation data for it.")
-            buoyInfo = SQConn.getNDBCBuoyInfo
+            buoyInfo = SQConn.getNDBCBuoyInfo(userBuoyID[0])
+            print(f"Found {buoyInfo[1]}/{buoyInfo[2]} in user buoy list.  Getting observation data for it.")
+            bInf = NDBCcli.getBuoyData(buoyInfo[1])
+            bInf.printBuoyData()
+            
+
         # print("Getting station ID' for user")
     
         # userStationIDs = SQConn.getStationsForUser(userID)
@@ -64,7 +68,7 @@ def main():
     # for forecast in stationForecasts:
         # print(f"Current forecast at {forecast.stationID} as of {forecast.startTime}:")
         # print(f"")
-        # print(f"{forecast.shortFore}, {forecast.temp}{forecast.tempUnit} with winds {forecast.windSpeed} at {forecast.windDir}")
+        # print(f"{forecast.shortFore}, {forecast.temp}{forecast.tempUnit} with winds {forecast.windSpeed} at {fore.\cast.windDir}")
         # print(f"Humidity {forecast.humidity}")
         # print()
 
