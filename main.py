@@ -4,9 +4,13 @@ from WeatherObjects.WObj import NOAAForecastPoint
 from Data.SQLite import SQLiteconn
 from NDBC.NDBCObj import NDBCBuoyData
 from NDBC.NDBCClient import NDBCClient
+from Stormglass.Stormclient import StormGlass
 
 
 def main():
+    SGCli = StormGlass('keys.apk')
+    SGCli.getStormglassForecast(26.12,-80.08)
+    print(SGCli.api_key)
     NDBCcli = NDBCClient()
     #firstBuoyDat = NDBCBuoyData(NDBCcli.getBuoyData("46042"))
     firstObs = NDBCcli.getBuoyData("41122")
@@ -27,22 +31,24 @@ def main():
     
     # print("Getting user station info....")
     # #SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
-    with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
-        
-        userID = SQConn.getUserIDbyUserName(username)
     
-        print(f"User ID: {userID}")
-        print("Getting buoy info for user...")
+    ##############################################################################################3
+    # with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
         
-        userBuoyIDs = SQConn.getNDBCBuoysForUser(userID)
+        # userID = SQConn.getUserIDbyUserName(username)
+    
+        # print(f"User ID: {userID}")
+        # print("Getting buoy info for user...")
         
-        for userBuoyID in userBuoyIDs:
-            buoyInfo = SQConn.getNDBCBuoyInfo(userBuoyID[0])
-            print(f"Found {buoyInfo[1]}/{buoyInfo[2]} in user buoy list.  Getting observation data for it.")
-            bInf = NDBCcli.getBuoyData(buoyInfo[1])
-            bInf.printBuoyData()
+        # userBuoyIDs = SQConn.getNDBCBuoysForUser(userID)
+        
+        # for userBuoyID in userBuoyIDs:
+            # buoyInfo = SQConn.getNDBCBuoyInfo(userBuoyID[0])
+            # print(f"Found {buoyInfo[1]}/{buoyInfo[2]} in user buoy list.  Getting observation data for it.")
+            # bInf = NDBCcli.getBuoyData(buoyInfo[1])
+            # bInf.printBuoyData()
             
-
+    ####################################################################################################
         # print("Getting station ID' for user")
     
         # userStationIDs = SQConn.getStationsForUser(userID)
