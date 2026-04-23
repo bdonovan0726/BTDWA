@@ -25,8 +25,24 @@ class NOAAClient:
         resp = requests.get(hourly_url, headers=self.headers, timeout=10)
         resp.raise_for_status()
         return resp.json()
+        
+    def getHourlyForecast(self, lat: float, lon: float) -> dict:
+        """Get hourly forecast (wind, temp, etc.)"""
+        point_data = self.get_point_metadata(lat, lon)
+        hourly_url = point_data["properties"]["forecastHourly"]
+
+        resp = requests.get(hourly_url, headers=self.headers, timeout=10)
+        resp.raise_for_status()
+        return resp.json()
 
     def get_latest_observation(self, station_id: str) -> dict:
+        """Get latest observation from a NOAA station (wind, temp)"""
+        url = f"{self.BASE_URL}/stations/{station_id}/observations/latest"
+        resp = requests.get(url, headers=self.headers, timeout=10)
+        resp.raise_for_status()
+        return resp.json()
+        
+    def getLatestObservation(self, station_id: str) -> dict:
         """Get latest observation from a NOAA station (wind, temp)"""
         url = f"{self.BASE_URL}/stations/{station_id}/observations/latest"
         resp = requests.get(url, headers=self.headers, timeout=10)
