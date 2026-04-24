@@ -70,6 +70,26 @@ class SQLiteconn:
         
         return results
         
+    def updateNWSLandCache(self, wData : tuple):
+        query = """
+            UPDATE NWS_Land_Cache
+            SET Timestamp = ?,
+            Desc = ?,
+            Temp = ?,
+            WindDir = ?,
+            WindSpeed = ?,
+            WindGust = ?,
+            Pressure = ?,
+            Humidity = ?,
+            WindChill = ?,
+            HeatIndex = ?,
+            CloudLayers = ?
+            WHERE StationID = ?
+        """
+        
+        self.cursor.execute(query, wData)
+        self.DBConn.commit()
+        
     def getNDBCBuoysForUser(self, userID : str):
         query = """
             SELECT ndbc_id

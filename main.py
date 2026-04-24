@@ -33,9 +33,9 @@ def main():
     # #SQConn = SQLiteconn("C:\sources\BTDWA\Data\weather.db")
     
     ##############################################################################################3
-    # with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
+    with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
         
-        # userID = SQConn.getUserIDbyUserName(username)
+        userID = SQConn.getUserIDbyUserName(username)
     
         # print(f"User ID: {userID}")
         # print("Getting buoy info for user...")
@@ -49,34 +49,34 @@ def main():
             # bInf.printBuoyData()
             
     ####################################################################################################
-        # print("Getting station ID' for user")
+        print("Getting station ID' for user")
     
-        # userStationIDs = SQConn.getStationsForUser(userID)
+        userStationIDs = SQConn.getStationsForUser(userID)
     
-        # if not userStationIDs:
-            # return
+        if not userStationIDs:
+            return
     
-        # for statID in userStationIDs:
-            # print(f"Found station {statID[0]} for user")
+        for statID in userStationIDs:
+            print(f"Found station {statID[0]} for user")
             
-            # stationInfo = SQConn.getStationInfoByID(statID[0])
-            # if not stationInfo:
-                # print(f"Unable to locate information from station {statID[0]}")
-                # return
-            # userStationsList.append((stationInfo[1], stationInfo[4], stationInfo[5]))
-    # #exiting the sql connection since no longer needed 
-    # #i need to implement some UML modeling
-    # for station in userStationsList:
-        # print(f"Found info: {station}, calling weather API with coordinates {station[1]}, {station[2]}")
-        # statForecastJSON = client.get_hourly_forecast(station[1], station[2])
-        # stationForecasts.append(NOAAForecastPoint(statForecastJSON["properties"]["periods"][0], station[0]))
+            stationInfo = SQConn.getStationInfoByID(statID[0])
+            if not stationInfo:
+                print(f"Unable to locate information from station {statID[0]}")
+                return
+            userStationsList.append((stationInfo[1], stationInfo[4], stationInfo[5]))
+    #exiting the sql connection since no longer needed 
+    #i need to implement some UML modeling
+    for station in userStationsList:
+        print(f"Found info: {station}, calling weather API with coordinates {station[1]}, {station[2]}")
+        statForecastJSON = client.get_hourly_forecast(station[1], station[2])
+        stationForecasts.append(NOAAForecastPoint(statForecastJSON["properties"]["periods"][0], station[0]))
 
-    # for forecast in stationForecasts:
-        # print(f"Current forecast at {forecast.stationID} as of {forecast.startTime}:")
-        # print(f"")
-        # print(f"{forecast.shortFore}, {forecast.temp}{forecast.tempUnit} with winds {forecast.windSpeed} at {fore.\cast.windDir}")
-        # print(f"Humidity {forecast.humidity}")
-        # print()
+    for forecast in stationForecasts:
+        print(f"Current forecast at {forecast.stationID} as of {forecast.startTime}:")
+        print(f"")
+        print(f"{forecast.shortFore}, {forecast.temp}{forecast.tempUnit} with winds {forecast.windSpeed} at {fore.\cast.windDir}")
+        print(f"Humidity {forecast.humidity}")
+        print()
 
 
 

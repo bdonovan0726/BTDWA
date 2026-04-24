@@ -1,4 +1,5 @@
 import json
+import time
 from NOAA.client import NOAAClient
 from WeatherObjects.WObj import NOAAForecastPoint
 from Data.SQLite import SQLiteconn
@@ -17,6 +18,8 @@ def main():
         
         # resp = client.getHourlyForecast(stationIDs[0][4], stationIDs[0][5])
         # print(resp['properties']['periods'][0])
+        
+        #####debug code--------------------------------------------------------------
         print(f'Calling for station KSTL')
         resp = client.getLatestObservation('KSTL')
         print(f'TempC: {resp['properties']['temperature']['value']}')
@@ -29,8 +32,17 @@ def main():
         print(f'WindChill: {resp['properties']['windChill']['value']}')
         print(f'HeatIndex: {resp['properties']['heatIndex']['value']}')
         print(f'CloudLayers: {resp['properties']['cloudLayers'][0]['amount']}')
-
-    
+        ###debug code---------------------------------------------------------------
+        
+        wData = (str(time.time()), resp['properties']['textDescription'],
+                resp['properties']['temperature']['value'], resp['properties']['windDirection']['value'],
+                resp['properties']['windSpeed']['value'], resp['properties']['windGust']['value'],
+                resp['properties']['barometricPressure']['value'],
+                resp['properties']['relativeHumidity']['value'], resp['properties']['windChill']['value'],
+                resp['properties']['heatIndex']['value'], resp['properties']['cloudLayers'][0]['amount'],
+                'KSTL')
+        print (wData)       
+        SQConn.updateNWSLandCache(wData)
         #print(json.dumps(resp, indent = 2))
         
 
