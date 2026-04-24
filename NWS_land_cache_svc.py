@@ -19,10 +19,20 @@ def main():
         # print(resp['properties']['periods'][0])
         print(f'Calling for station KSTL')
         resp = client.getLatestObservation('KSTL')
-        print(resp['properties']['temperature']['value'])
-        # print(json.dumps(resp, indent = 2))
-        
+        print(f'TempC: {resp['properties']['temperature']['value']}')
+        print(f'Description: {resp['properties']['textDescription']}')
+        print(f'WindDIrecgtion: {resp['properties']['windDirection']['value']}')
+        print(f'windSpeed: {resp['properties']['windSpeed']['value']}')
+        print(f'windGust: {resp['properties']['windGust']['value']}')
+        print(f'Pressure: {resp['properties']['barometricPressure']['value']}')
+        print(f'Humidity: {resp['properties']['relativeHumidity']['value']}')
+        print(f'WindChill: {resp['properties']['windChill']['value']}')
+        print(f'HeatIndex: {resp['properties']['heatIndex']['value']}')
+        print(f'CloudLayers: {resp['properties']['cloudLayers'][0]['amount']}')
 
+    
+        #print(json.dumps(resp, indent = 2))
+        
 
 if __name__ == "__main__":
     main()

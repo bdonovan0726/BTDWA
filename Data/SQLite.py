@@ -59,6 +59,17 @@ class SQLiteconn:
         
         return results
         
+    def getAllNWSLandStations(self):
+        query = """
+            SELECT *
+            FROM NWSStations
+        """
+        
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        
+        return results
+        
     def getNDBCBuoysForUser(self, userID : str):
         query = """
             SELECT ndbc_id
