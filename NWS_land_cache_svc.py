@@ -16,19 +16,23 @@ def main():
         stationList = SQConn.getAllNWSLandStationsFromCache()
         for station in stationList:
             print(f'Calling/updating for station {station[0]}')
-            resp = client.getLatestObservation(station[0])
+            try:
+                resp = client.getLatestObservation(station[0])
 
-        ###debug code---------------------------------------------------------------
-        
-            wData = (str(time.time()), resp['properties']['textDescription'],
-                    resp['properties']['temperature']['value'], resp['properties']['windDirection']['value'],
-                    resp['properties']['windSpeed']['value'], resp['properties']['windGust']['value'],
-                    resp['properties']['barometricPressure']['value'],
-                    resp['properties']['relativeHumidity']['value'], resp['properties']['windChill']['value'],
-                    resp['properties']['heatIndex']['value'], resp['properties']['cloudLayers'][0]['amount'],
-                    station[0])
-        #print (wData)       
-            SQConn.updateNWSLandCache(wData)
+            ###debug code---------------------------------------------------------------
+            
+                wData = (str(time.time()), resp['properties']['textDescription'],
+                        resp['properties']['temperature']['value'], resp['properties']['windDirection']['value'],
+                        resp['properties']['windSpeed']['value'], resp['properties']['windGust']['value'],
+                        resp['properties']['barometricPressure']['value'],
+                        resp['properties']['relativeHumidity']['value'], resp['properties']['windChill']['value'],
+                        resp['properties']['heatIndex']['value'], resp['properties']['cloudLayers'][0]['amount'],
+                        station[0])
+            #print (wData)       
+                SQConn.updateNWSLandCache(wData)
+            except Exception as e:
+                print(f'Encounbtered issue with station {station[0]}: {e}')
+                continue
         #print(json.dumps(resp, indent = 2))
         
 
