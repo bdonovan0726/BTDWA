@@ -70,6 +70,17 @@ class SQLiteconn:
         
         return results
         
+    def getAllNWSLandStationsFromCache(self):
+        query = """
+            SELECT StationID
+            FROM NWS_Land_Cache
+        """
+        
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        
+        return results
+        
     def updateNWSLandCache(self, wData : tuple):
         query = """
             UPDATE NWS_Land_Cache
