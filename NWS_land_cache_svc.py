@@ -3,11 +3,18 @@ import time
 import logging
 from NOAA.client import NOAAClient
 from Data.SQLite import SQLiteconn
+from datetime import datetime
 
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_filename = f"weather_service_{timestamp}.log"
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_filename),
+        logging.StreamHandler()
+    ]    
 )
 
 def main():
