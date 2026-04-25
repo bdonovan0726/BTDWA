@@ -1,11 +1,8 @@
 import json
 import time
 from NOAA.client import NOAAClient
-from WeatherObjects.WObj import NOAAForecastPoint
 from Data.SQLite import SQLiteconn
-from NDBC.NDBCObj import NDBCBuoyData
-from NDBC.NDBCClient import NDBCClient
-from Stormglass.Stormclient import StormGlass
+
 
 def main():
 
@@ -37,11 +34,18 @@ def main():
                 print(f'Encounbtered issue with station {station[0]}: {e}')
                 print(f'JSON: {json.dumps(JSONresp, indent = 2)}')
                 continue
-        #print(json.dumps(resp, indent = 2))
-        
+    
 
 if __name__ == "__main__":
-    main()
+    while True:
+        print('Starting cycle')
+        try:
+            main()
+        except Exception as e:
+            print(f'Loop error: {e}')
+            
+        print('Cycle complete, sleeping...')
+        time.sleep(15)
     
 ###GRAVEYARD###############
         # stationIDs = SQConn.getAllNWSStations()
