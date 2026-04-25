@@ -1,8 +1,14 @@
 import json
 import time
+import logging
 from NOAA.client import NOAAClient
 from Data.SQLite import SQLiteconn
 
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s"
+)
 
 def main():
 
@@ -37,15 +43,19 @@ def main():
     
 
 if __name__ == "__main__":
-    while True:
-        print('Starting cycle')
-        try:
-            main()
-        except Exception as e:
-            print(f'Loop error: {e}')
+    try:
+        while True:
+            logging.info("Starting cycle...")
+            try:
+                main()
+            except Exception as e:
+                logging.error(f"Loop error: {e}")
+                
+            logging.info("Cycle complete. Sleeping...\n")
+            time.sleep(900)
             
-        print('Cycle complete, sleeping...')
-        time.sleep(15)
+    except:
+        logging.info("Shutting down service gracefully...")
     
 ###GRAVEYARD###############
         # stationIDs = SQConn.getAllNWSStations()
