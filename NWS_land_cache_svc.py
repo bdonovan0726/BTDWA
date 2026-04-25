@@ -1,12 +1,16 @@
 import json
 import time
 import logging
+import os
 from NOAA.client import NOAAClient
 from Data.SQLite import SQLiteconn
 from datetime import datetime
 
+log_dir = "Logs"
+os.makedirs(log_dir, exist_ok=True)
+
 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-log_filename = f"weather_service_{timestamp}.log"
+log_filename = os.path.join(log_dir, f"weather_service_{timestamp}.log")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -50,6 +54,7 @@ def main():
     
 
 if __name__ == "__main__":
+    
     try:
         while True:
             logging.info("Starting cycle...")
@@ -64,23 +69,3 @@ if __name__ == "__main__":
     except:
         logging.info("Shutting down service gracefully...")
     
-###GRAVEYARD###############
-        # stationIDs = SQConn.getAllNWSStations()
-        # print(f'Station info: {stationIDs[0][1]}')
-        # print(f'Calling for coordinates: {stationIDs[0][4]}:{stationIDs[0][5]}')
-        
-        # resp = client.getHourlyForecast(stationIDs[0][4], stationIDs[0][5])
-        # print(resp['periods'][0])
-        
-        #####debug code--------------------------------------------------------------
-
-        # print(f'TempC: {resp['temperature']['value']}')
-        # print(f'Description: {resp['textDescription']}')
-        # print(f'WindDIrecgtion: {resp['windDirection']['value']}')
-        # print(f'windSpeed: {resp['windSpeed']['value']}')
-        # print(f'windGust: {resp['windGust']['value']}')
-        # print(f'Pressure: {resp['barometricPressure']['value']}')
-        # print(f'Humidity: {resp['relativeHumidity']['value']}')
-        # print(f'WindChill: {resp['windChill']['value']}')
-        # print(f'HeatIndex: {resp['heatIndex']['value']}')
-        # print(f'CloudLayers: {resp['cloudLayers'][0]['amount']}')
