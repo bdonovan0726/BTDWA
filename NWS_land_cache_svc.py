@@ -9,29 +9,33 @@ from Stormglass.Stormclient import StormGlass
 
 def main():
 
+    client = NOAAClient()
+
     with SQLiteconn("C:\sources\BTDWA\Data\weather.db") as SQConn:
-        
-        client = NOAAClient()
         
         stationList = SQConn.getAllNWSLandStationsFromCache()
         for station in stationList:
             print(f'Calling/updating for station {station[0]}')
             try:
-                resp = client.getLatestObservation(station[0])
-
+                JSONresp = client.getLatestObservation(station[0])
+                resp = JSONresp['properties']
             ###debug code---------------------------------------------------------------
-            
-                wData = (str(time.time()), resp['properties']['textDescription'],
-                        resp['properties']['temperature']['value'], resp['properties']['windDirection']['value'],
-                        resp['properties']['windSpeed']['value'], resp['properties']['windGust']['value'],
-                        resp['properties']['barometricPressure']['value'],
-                        resp['properties']['relativeHumidity']['value'], resp['properties']['windChill']['value'],
-                        resp['properties']['heatIndex']['value'], resp['properties']['cloudLayers'][0]['amount'],
-                        station[0])
-            #print (wData)       
+                wData = (str(time.time()),
+                        resp.get('textDescription', 'NA'),
+                        resp.get('temperature', {}).get('value'),
+                        resp.get('windDirection', {}).get('value'),
+                        resp.get('windSpeed', {}).get('value'),
+                        resp.get('windGust', {}).get('value'),
+                        resp.get('barometricPressure', {}).get('value'),
+                        resp.get('relativeHumidity', {}).get('value'),
+                        resp.get('windChill', {}).get('value'),
+                        resp.get('heatIndex', {}).get('value'),
+                        json.dumps(JSONresp, indent = 2),
+                        resp['timestamp'], station[0])       
                 SQConn.updateNWSLandCache(wData)
             except Exception as e:
                 print(f'Encounbtered issue with station {station[0]}: {e}')
+                print(f'JSON: {json.dumps(JSONresp, indent = 2)}')
                 continue
         #print(json.dumps(resp, indent = 2))
         
@@ -45,17 +49,17 @@ if __name__ == "__main__":
         # print(f'Calling for coordinates: {stationIDs[0][4]}:{stationIDs[0][5]}')
         
         # resp = client.getHourlyForecast(stationIDs[0][4], stationIDs[0][5])
-        # print(resp['properties']['periods'][0])
+        # print(resp['periods'][0])
         
         #####debug code--------------------------------------------------------------
 
-        # print(f'TempC: {resp['properties']['temperature']['value']}')
-        # print(f'Description: {resp['properties']['textDescription']}')
-        # print(f'WindDIrecgtion: {resp['properties']['windDirection']['value']}')
-        # print(f'windSpeed: {resp['properties']['windSpeed']['value']}')
-        # print(f'windGust: {resp['properties']['windGust']['value']}')
-        # print(f'Pressure: {resp['properties']['barometricPressure']['value']}')
-        # print(f'Humidity: {resp['properties']['relativeHumidity']['value']}')
-        # print(f'WindChill: {resp['properties']['windChill']['value']}')
-        # print(f'HeatIndex: {resp['properties']['heatIndex']['value']}')
-        # print(f'CloudLayers: {resp['properties']['cloudLayers'][0]['amount']}')
+        # print(f'TempC: {resp['temperature']['value']}')
+        # print(f'Description: {resp['textDescription']}')
+        # print(f'WindDIrecgtion: {resp['windDirection']['value']}')
+        # print(f'windSpeed: {resp['windSpeed']['value']}')
+        # print(f'windGust: {resp['windGust']['value']}')
+        # print(f'Pressure: {resp['barometricPressure']['value']}')
+        # print(f'Humidity: {resp['relativeHumidity']['value']}')
+        # print(f'WindChill: {resp['windChill']['value']}')
+        # print(f'HeatIndex: {resp['heatIndex']['value']}')
+        # print(f'CloudLayers: {resp['cloudLayers'][0]['amount']}')

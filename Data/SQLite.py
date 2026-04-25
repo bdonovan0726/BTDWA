@@ -94,7 +94,8 @@ class SQLiteconn:
             Humidity = ?,
             WindChill = ?,
             HeatIndex = ?,
-            CloudLayers = ?
+            JSON_raw = ?,
+            ObsTimestamp = ?
             WHERE StationID = ?
         """
         
