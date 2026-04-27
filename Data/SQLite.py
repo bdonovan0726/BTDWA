@@ -126,5 +126,16 @@ class SQLiteconn:
         
         return results
         
+    def getAllCachedNWSObservations(self):
+        query = """
+            SELECT *
+            FROM NWS_Land_Cache
+        """
+        
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        
+        return results
+        
     def __exit__(self, ev, et, evb):
         self.DBConn.close()

@@ -2,9 +2,19 @@ import json
 import time
 import logging
 import os
+import argparse
 from NOAA.client import NOAAClient
 from Data.SQLite import SQLiteconn
 from datetime import datetime
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+"-d", "--delay",
+default = 900,
+type = int,
+help = 'time delay between fetches'
+)
 
 log_dir = "Logs"
 os.makedirs(log_dir, exist_ok=True)
@@ -57,15 +67,17 @@ if __name__ == "__main__":
     
     try:
         while True:
-            logging.info("Starting cycle...")
+            args = parser.parse_args()
+            logging.info(f"Starting cycle with delay {args.delay} seconds...")
             try:
                 main()
             except Exception as e:
                 logging.error(f"Loop error: {e}")
                 
             logging.info("Cycle complete. Sleeping...\n")
-            time.sleep(900)
+            time.sleep(args.delay)
             
-    except:
+    except Exception as e:
+        logging.info(f"Caught exception: {e}")
         logging.info("Shutting down service gracefully...")
     
