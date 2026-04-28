@@ -128,14 +128,27 @@ class SQLiteconn:
         
     def getAllCachedNWSObservations(self):
         query = """
-            SELECT *
+            SELECT
+            StationID,
+            Timestamp,
+            Desc,
+            Temp,
+            WindDir,
+            WindSpeed,
+            Pressure,
+            Humidity,
+            HeatIndex,
+            ObsTimestamp
             FROM NWS_Land_Cache
         """
         
         self.cursor.execute(query)
         results = self.cursor.fetchall()
         
-        return results
+        return results, self.cursor.description
+        
+    def rowToDict(self, description, row):
+        return {col[0]: row[idx] for idx, col in enumerate(description)}
         
     def __exit__(self, ev, et, evb):
         self.DBConn.close()
