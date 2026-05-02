@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  cache:
+    build: .
+    command: python NWS_land_cache_svc.py --interval 180
+    volumes:
+      - ./Data:/app/data
+
+  api:
+    build: .
+    command: python NWS_api.py
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./Data:/app/data

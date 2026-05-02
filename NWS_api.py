@@ -4,7 +4,7 @@ import sqlite3
 
 app = Flask(__name__)
 
-DB_PATH = "C:\sources\BTDWA\Data\weather.db"
+DB_PATH = "Data/weather.db"
 
 @app.route("/observations", methods = ["GET"])
 def get_current_obs():
@@ -15,4 +15,4 @@ def get_current_obs():
         return jsonify(jsonObs)
         
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", debug=True)
