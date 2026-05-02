@@ -3,7 +3,7 @@ version: "3.9"
 services:
   cache:
     build: .
-    command: python NWS_land_cache_svc.py --interval 180
+    command: python NWS_land_cache_svc.py -d 180
     volumes:
       - ./Data:/app/data
 

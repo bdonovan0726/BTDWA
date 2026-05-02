@@ -35,7 +35,7 @@ def main():
 
     client = NOAAClient()
 
-    with SQLiteconn("Data\weather.db") as SQConn:
+    with SQLiteconn("Data/weather.db") as SQConn:
         
         stationList = SQConn.getAllNWSLandStationsFromCache()
         for station in stationList:
