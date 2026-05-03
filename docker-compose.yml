@@ -5,7 +5,7 @@ services:
     build: .
     command: python NWS_land_cache_svc.py -d 180
     volumes:
-      - ./Data:/app/data
+      - ./Data:/app/Data
 
   api:
     build: .
@@ -13,4 +13,4 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./Data:/app/data
+      - ./Data:/app/Data

@@ -1,4 +1,16 @@
 
 ###to revbuild after a change...
+these launce a single docker
 docker build -t weather-app .
 docker run -p 5000:5000 weather-app
+
+this launches multiple containers with a shared volume:
+docker-compose up --build
+
+
+I needed to install sqlite3 executable inside a running image, i used the below sequence:
+ 
+ connect to bash inside image:
+ docker-compose exec cache bash   ###cache is name of image
+ apt update
+ apt install sqlite3
