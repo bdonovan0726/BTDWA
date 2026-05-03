@@ -1,8 +1,10 @@
 from flask import Flask, jsonify
 from Data.SQLite import SQLiteconn
+from flask_cors import CORS
 import sqlite3
 
 app = Flask(__name__)
+CORS(app)
 
 DB_PATH = "Data/weather.db"
 
