@@ -112,6 +112,15 @@ function formatTime(val) {
     }
 }
 
+function formatTemp(celsius) {
+    if (celsius == null || isNaN(celsius)) return "";
+
+    const c = Math.round(celsius);
+    const f = Math.round((celsius * 9/5) + 32);
+
+    return `${c}°C / ${f}°F`;
+}
+
 async function loadData() {
     const status = document.getElementById("status");
     const container = document.getElementById("container");
@@ -144,19 +153,44 @@ async function loadData() {
         container.innerHTML = enhanced.map(row => {
             const isFresh = row.Age.includes("just") || row.Age.startsWith("0");
 
-            const rows = Object.entries(row).map(([key, val]) => {
+            const rows = Object.entries(row)
+                .filter(([key]) => key !== "StationID")
+                .map(([key, val]) => {
 
-                if (key.toLowerCase().includes("time")) {
-                    val = formatTime(val);
-                }
+                    const k = key.toLowerCase();
 
-                return `
-                    <tr>
-                        <td>${key}</td>
-                        <td>${val ?? ""}</td>
-                    </tr>
-                `;
-            }).join("");
+                    // Time formatting
+                    if (k.includes("time") && val) {
+                        val = formatTime(val);
+                    }
+
+                    // Humidity %
+                    if (k === "humidity" && val != null) {
+                        val = `${Math.round(val)}%`;
+                    }
+
+                    // Temperature handling (FIXED)
+                    if (
+                        k === "temp" ||
+                        k === "temperature" ||
+                        k.includes("heatindex") ||
+                        k.includes("windchill")
+                    ) {
+                        val = formatTemp(val);
+                    }
+
+                    // Round pressure & windspeed
+                    if (["pressure", "windspeed"].includes(k) && val != null) {
+                        val = Math.round(val);
+                    }
+
+                    return `
+                        <tr>
+                            <td>${key}</td>
+                            <td>${val ?? ""}</td>
+                        </tr>
+                    `;
+                }).join("");
 
             return `
                 <div class="station-card">
