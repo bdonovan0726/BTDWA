@@ -21,41 +21,54 @@
 
     .status {
         text-align: center;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
         font-size: 14px;
         color: #666;
     }
 
-    .table-container {
-        overflow-x: auto;
+    .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .station-card {
+        width: 100%;
+        max-width: 500px;
         background: white;
         border-radius: 8px;
         box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+
+    .station-header {
+        background: #0077cc;
+        color: white;
+        font-weight: bold;
+        padding: 10px;
+        text-align: center;
+        font-size: 16px;
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 800px;
     }
 
-    th, td {
+    td {
         padding: 8px 10px;
         border-bottom: 1px solid #eee;
-        text-align: left;
-        white-space: nowrap;
     }
 
-    th {
-        background: #0077cc;
-        color: white;
-        position: sticky;
-        top: 0;
-        z-index: 1;
+    td:first-child {
+        font-weight: 600;
+        color: #555;
+        width: 50%;
     }
 
-    tr:hover {
-        background: #f1f7ff;
+    td:last-child {
+        text-align: right;
     }
 
     tr:nth-child(even) {
@@ -63,16 +76,12 @@
     }
 
     .fresh {
-        background: #e6ffed !important;
+        background: #e6ffed;
     }
 
     @media (max-width: 768px) {
         body {
-            font-size: 12px;
-        }
-
-        th, td {
-            padding: 6px;
+            font-size: 13px;
         }
     }
 </style>
@@ -84,14 +93,7 @@
 <h2>Weather Observations</h2>
 <div class="status" id="status">Loading data...</div>
 
-<div class="table-container">
-    <table>
-        <thead>
-            <tr id="tableHead"></tr>
-        </thead>
-        <tbody id="tableBody"></tbody>
-    </table>
-</div>
+<div class="container" id="container"></div>
 
 <script>
 function formatTime(val) {
@@ -99,7 +101,6 @@ function formatTime(val) {
         let d;
 
         if (!isNaN(val)) {
-            // epoch seconds → ms
             d = new Date(parseFloat(val) * 1000);
         } else {
             d = new Date(val);
@@ -113,33 +114,21 @@ function formatTime(val) {
 
 async function loadData() {
     const status = document.getElementById("status");
+    const container = document.getElementById("container");
 
     try {
         const response = await fetch("http://localhost:5000/observations");
         const data = await response.json();
 
-        console.log("API Data:", data);
-
-        const tableHead = document.getElementById("tableHead");
-        const tableBody = document.getElementById("tableBody");
-
         if (!data || data.length === 0) {
-            tableBody.innerHTML = "<tr><td>No data available</td></tr>";
+            container.innerHTML = "<p>No data available</p>";
             status.innerText = "No data returned from API";
             return;
         }
 
         const now = Date.now();
 
-        // Sort newest observation first
-        const sorted = data.sort((a, b) => {
-            const t1 = new Date(a.ObsTimestamp || 0);
-            const t2 = new Date(b.ObsTimestamp || 0);
-            return t2 - t1;
-        });
-
-        // Add Age column
-        const enhanced = sorted.map(row => {
+        const enhanced = data.map(row => {
             let ts = row.Timestamp;
             let age = "";
 
@@ -152,41 +141,42 @@ async function loadData() {
             return { ...row, Age: age };
         });
 
-        const headers = Object.keys(enhanced[0]);
-
-        // Build header
-        tableHead.innerHTML = headers.map(h => `<th>${h}</th>`).join("");
-
-        // Build rows
-        tableBody.innerHTML = enhanced.map(row => {
+        container.innerHTML = enhanced.map(row => {
             const isFresh = row.Age.includes("just") || row.Age.startsWith("0");
 
+            const rows = Object.entries(row).map(([key, val]) => {
+
+                if (key.toLowerCase().includes("time")) {
+                    val = formatTime(val);
+                }
+
+                return `
+                    <tr>
+                        <td>${key}</td>
+                        <td>${val ?? ""}</td>
+                    </tr>
+                `;
+            }).join("");
+
             return `
-                <tr class="${isFresh ? 'fresh' : ''}">
-                    ${headers.map(h => {
-                        let val = row[h];
-
-                        if (h.toLowerCase().includes("time") && val) {
-                            val = formatTime(val);
-                        }
-
-                        return `<td>${val ?? ""}</td>`;
-                    }).join("")}
-                </tr>
+                <div class="station-card">
+                    <div class="station-header">${row.StationID || "Unknown Station"}</div>
+                    <table class="${isFresh ? 'fresh' : ''}">
+                        ${rows}
+                    </table>
+                </div>
             `;
         }).join("");
 
         status.innerText = `Last updated: ${new Date().toLocaleTimeString()}`;
 
     } catch (err) {
-        console.error("Error loading data:", err);
-        document.getElementById("tableBody").innerHTML =
-            "<tr><td>Error loading data</td></tr>";
+        console.error(err);
+        container.innerHTML = "<p>Error loading data</p>";
         status.innerText = "Error connecting to API";
     }
 }
 
-// Load + refresh
 loadData();
 setInterval(loadData, 60000);
 </script>
