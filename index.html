@@ -49,6 +49,35 @@
         padding: 10px;
         text-align: center;
         font-size: 16px;
+        cursor: pointer;
+        position: relative;
+    }
+
+    /* Tooltip */
+    .tooltip {
+        position: absolute;
+        bottom: -45px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #333;
+        color: white;
+        padding: 6px 10px;
+        border-radius: 5px;
+        font-size: 12px;
+        white-space: nowrap;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease;
+        z-index: 10;
+    }
+
+    .station-header:hover .tooltip {
+        opacity: 1;
+    }
+
+    .tooltip.show {
+        opacity: 1;
+        pointer-events: auto;
     }
 
     table {
@@ -121,6 +150,13 @@ function formatTemp(celsius) {
     return `${c}°C / ${f}°F`;
 }
 
+function formatWind(mps) {
+    if (mps == null || isNaN(mps)) return "";
+
+    const mph = Math.round(mps * 2.237);
+    return `${mph} mph`;
+}
+
 async function loadData() {
     const status = document.getElementById("status");
     const container = document.getElementById("container");
@@ -154,22 +190,23 @@ async function loadData() {
             const isFresh = row.Age.includes("just") || row.Age.startsWith("0");
 
             const rows = Object.entries(row)
-                .filter(([key]) => key !== "StationID")
+                .filter(([key]) => 
+                    key !== "StationID" && 
+                    key !== "StationName" && 
+                    key !== "StationComments"
+                )
                 .map(([key, val]) => {
 
                     const k = key.toLowerCase();
 
-                    // Time formatting
                     if (k.includes("time") && val) {
                         val = formatTime(val);
                     }
 
-                    // Humidity %
                     if (k === "humidity" && val != null) {
                         val = `${Math.round(val)}%`;
                     }
 
-                    // Temperature handling (FIXED)
                     if (
                         k === "temp" ||
                         k === "temperature" ||
@@ -179,9 +216,12 @@ async function loadData() {
                         val = formatTemp(val);
                     }
 
-                    // Round pressure & windspeed
-                    if (["pressure", "windspeed"].includes(k) && val != null) {
-                        val = Math.round(val);
+                    if (k.includes("windspeed") || k.includes("windgust")) {
+                        val = formatWind(val);
+                    }
+
+                    if (k === "pressure" && val != null) {
+                        val = `${Math.round(val)} hPa`;
                     }
 
                     return `
@@ -194,7 +234,12 @@ async function loadData() {
 
             return `
                 <div class="station-card">
-                    <div class="station-header">${row.StationID || "Unknown Station"}</div>
+                    <div class="station-header" onclick="toggleTooltip(this)">
+                        ${row.StationName || row.StationID || "Unknown Station"}
+                        <div class="tooltip">
+                            ${row.StationComments || ""}
+                        </div>
+                    </div>
                     <table class="${isFresh ? 'fresh' : ''}">
                         ${rows}
                     </table>
@@ -209,6 +254,18 @@ async function loadData() {
         container.innerHTML = "<p>Error loading data</p>";
         status.innerText = "Error connecting to API";
     }
+}
+
+// Mobile tap support
+function toggleTooltip(el) {
+    const tip = el.querySelector(".tooltip");
+
+    // close others
+    document.querySelectorAll(".tooltip").forEach(t => {
+        if (t !== tip) t.classList.remove("show");
+    });
+
+    tip.classList.toggle("show");
 }
 
 loadData();
