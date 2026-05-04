@@ -147,6 +147,31 @@ class SQLiteconn:
         
         return results, self.cursor.description
         
+    def getAllCachedNWSObservationsWStatInfo(self):
+        query = """
+            SELECT
+            ch.StationID,
+            ch.Timestamp,
+            ch.Desc,
+            ch.Temp,
+            ch.WindDir,
+            ch.WindSpeed,
+            ch.Pressure,
+            ch.Humidity,
+            ch.HeatIndex,
+            ch.ObsTimestamp,
+            st.Name as StationName,
+            st.Comments as StationComments
+            FROM NWS_Land_Cache as ch
+            INNER JOIN NWSStations as st
+            ON ch.StationID = st.StationID
+        """
+        
+        self.cursor.execute(query)
+        results = self.cursor.fetchall()
+        
+        return results, self.cursor.description
+        
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
         

@@ -12,7 +12,7 @@ DB_PATH = "Data/weather.db"
 def get_current_obs():
     
     with SQLiteconn(DB_PATH) as SQConn:
-        obs, desc = SQConn.getAllCachedNWSObservations()
+        obs, desc = SQConn.getAllCachedNWSObservationsWStatInfo()
         jsonObs = [SQConn.rowToDict(desc, row) for row in obs]
         return jsonify(jsonObs)
         
