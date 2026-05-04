@@ -30,7 +30,7 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        gap: 20px;
+        gap: 12px;
     }
 
     .station-card {
@@ -51,33 +51,64 @@
         font-size: 16px;
         cursor: pointer;
         position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .info-icon {
+        font-size: 14px;
+        opacity: 0.8;
     }
 
     /* Tooltip */
     .tooltip {
         position: absolute;
-        bottom: -45px;
+        bottom: -55px;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translateX(-50%) translateY(5px);
         background: #333;
         color: white;
         padding: 6px 10px;
-        border-radius: 5px;
+        border-radius: 6px;
         font-size: 12px;
         white-space: nowrap;
         opacity: 0;
         pointer-events: none;
-        transition: opacity 0.2s ease;
+        transition: all 0.2s ease;
         z-index: 10;
+    }
+
+    .tooltip::after {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 50%;
+        transform: translateX(-50%);
+        border-width: 6px;
+        border-style: solid;
+        border-color: transparent transparent #333 transparent;
     }
 
     .station-header:hover .tooltip {
         opacity: 1;
+        transform: translateX(-50%) translateY(0);
     }
 
     .tooltip.show {
         opacity: 1;
         pointer-events: auto;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* Collapsible content */
+    .station-content {
+        display: none;
+    }
+
+    .station-card.active .station-content {
+        display: block;
     }
 
     table {
@@ -107,12 +138,6 @@
     .fresh {
         background: #e6ffed;
     }
-
-    @media (max-width: 768px) {
-        body {
-            font-size: 13px;
-        }
-    }
 </style>
 
 </head>
@@ -127,13 +152,9 @@
 <script>
 function formatTime(val) {
     try {
-        let d;
-
-        if (!isNaN(val)) {
-            d = new Date(parseFloat(val) * 1000);
-        } else {
-            d = new Date(val);
-        }
+        let d = !isNaN(val)
+            ? new Date(parseFloat(val) * 1000)
+            : new Date(val);
 
         return isNaN(d) ? "Invalid Date" : d.toLocaleString();
     } catch {
@@ -143,18 +164,14 @@ function formatTime(val) {
 
 function formatTemp(celsius) {
     if (celsius == null || isNaN(celsius)) return "";
-
     const c = Math.round(celsius);
     const f = Math.round((celsius * 9/5) + 32);
-
     return `${c}°C / ${f}°F`;
 }
 
 function formatWind(mps) {
     if (mps == null || isNaN(mps)) return "";
-
-    const mph = Math.round(mps * 2.237);
-    return `${mph} mph`;
+    return `${Math.round(mps * 2.237)} mph`;
 }
 
 async function loadData() {
@@ -165,107 +182,88 @@ async function loadData() {
         const response = await fetch("http://localhost:5000/observations");
         const data = await response.json();
 
-        if (!data || data.length === 0) {
+        if (!data.length) {
             container.innerHTML = "<p>No data available</p>";
-            status.innerText = "No data returned from API";
             return;
         }
 
         const now = Date.now();
 
         const enhanced = data.map(row => {
-            let ts = row.Timestamp;
             let age = "";
-
-            if (!isNaN(ts)) {
-                const diff = now - (parseFloat(ts) * 1000);
+            if (!isNaN(row.Timestamp)) {
+                const diff = now - (parseFloat(row.Timestamp) * 1000);
                 const mins = Math.floor(diff / 60000);
                 age = mins < 1 ? "just now" : `${mins} min ago`;
             }
-
             return { ...row, Age: age };
         });
 
         container.innerHTML = enhanced.map(row => {
-            const isFresh = row.Age.includes("just") || row.Age.startsWith("0");
 
             const rows = Object.entries(row)
-                .filter(([key]) => 
-                    key !== "StationID" && 
-                    key !== "StationName" && 
-                    key !== "StationComments"
-                )
-                .map(([key, val]) => {
+                .filter(([k]) => !["StationID","StationName","StationComments"].includes(k))
+                .map(([key,val]) => {
 
                     const k = key.toLowerCase();
 
-                    if (k.includes("time") && val) {
-                        val = formatTime(val);
-                    }
-
-                    if (k === "humidity" && val != null) {
-                        val = `${Math.round(val)}%`;
-                    }
-
-                    if (
-                        k === "temp" ||
-                        k === "temperature" ||
-                        k.includes("heatindex") ||
-                        k.includes("windchill")
-                    ) {
+                    if (k.includes("time")) val = formatTime(val);
+                    if (k === "humidity") val = `${Math.round(val)}%`;
+                    if (["temp","temperature"].includes(k) || k.includes("heatindex") || k.includes("windchill"))
                         val = formatTemp(val);
-                    }
-
-                    if (k.includes("windspeed") || k.includes("windgust")) {
+                    if (k.includes("windspeed") || k.includes("windgust"))
                         val = formatWind(val);
-                    }
+                    if (k === "pressure") val = `${Math.round(val)} hPa`;
 
-                    if (k === "pressure" && val != null) {
-                        val = `${Math.round(val)} hPa`;
-                    }
-
-                    return `
-                        <tr>
-                            <td>${key}</td>
-                            <td>${val ?? ""}</td>
-                        </tr>
-                    `;
+                    return `<tr><td>${key}</td><td>${val ?? ""}</td></tr>`;
                 }).join("");
 
             return `
                 <div class="station-card">
-                    <div class="station-header" onclick="toggleTooltip(this)">
-                        ${row.StationName || row.StationID || "Unknown Station"}
-                        <div class="tooltip">
-                            ${row.StationComments || ""}
-                        </div>
+                    <div class="station-header" onclick="toggleCard(this)">
+                        ${row.StationName}
+                        <span class="info-icon">ℹ️</span>
+                        <div class="tooltip">${row.StationComments || ""}</div>
                     </div>
-                    <table class="${isFresh ? 'fresh' : ''}">
-                        ${rows}
-                    </table>
+                    <div class="station-content">
+                        <table>${rows}</table>
+                    </div>
                 </div>
             `;
         }).join("");
 
         status.innerText = `Last updated: ${new Date().toLocaleTimeString()}`;
 
-    } catch (err) {
-        console.error(err);
+    } catch {
         container.innerHTML = "<p>Error loading data</p>";
-        status.innerText = "Error connecting to API";
     }
 }
 
-// Mobile tap support
+function toggleCard(el) {
+    const card = el.parentElement;
+
+    // close all others
+    document.querySelectorAll(".station-card").forEach(c => {
+        if (c !== card) c.classList.remove("active");
+    });
+
+    card.classList.toggle("active");
+
+    toggleTooltip(el);
+}
+
 function toggleTooltip(el) {
     const tip = el.querySelector(".tooltip");
 
-    // close others
     document.querySelectorAll(".tooltip").forEach(t => {
         if (t !== tip) t.classList.remove("show");
     });
 
     tip.classList.toggle("show");
+
+    if (tip.classList.contains("show")) {
+        setTimeout(() => tip.classList.remove("show"), 3000);
+    }
 }
 
 loadData();
