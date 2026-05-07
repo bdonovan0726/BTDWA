@@ -19,9 +19,9 @@ class StormGlass:
         self.reqParams = ['airTemperature', 'pressure', 'cloudCover', 'gust', 'humidity',
                             'precipitation', 'rain', 'snow', 'windDirection', 'windSpeed']
         
-    def getStormglassForecast(self, lat : float, lon : float):
+    def getStormglassForecast(self, lat : float, lon : float, itvDays = 7):
         start = datetime.now(UTC)
-        end = start + timedelta(hours=3)
+        end = start + timedelta(days=itvDays)
         print(f'Begin: {start}')
         print(f'End: {end}')
         response = requests.get(self.baseURL,
@@ -38,4 +38,5 @@ class StormGlass:
         )
         
         json_data = response.json()
-        print(json.dumps(json_data, indent = 2))
+        return json_data
+        #print(json.dumps(json_data, indent = 2))

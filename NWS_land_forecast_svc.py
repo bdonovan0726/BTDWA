@@ -35,7 +35,22 @@ logging.basicConfig(
 def main():
     
     SGCli = StormGlass('keys.apk')
-    SGCli.getStormglassForecast(26.12,-80.08)
+    
+    with SQLiteconn("Data/weather.db") as SQConn:
+        stats = SQConn.getAllNWSLandStations()
+        for station in stats:
+            try:
+                start = datetime.now(UTC)
+                end = start + timedelta(days=7)
+                print(f'Retrieving/updating forecast information for station: {station[0]}')
+                respJSON = SGCli.getStormglassForecast(station[3], station[4])
+                foreData = (int(time.time()), start, end, json.dumps(respJSON), station[0])
+                SQConn.updateNWSLandForecastCache(foreData)
+                
+            except Exception as e:
+                logging.error(f'Received error: {e}')
+                continue
+            
     
 if __name__ == "__main__":
     main()

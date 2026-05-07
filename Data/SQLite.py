@@ -172,6 +172,19 @@ class SQLiteconn:
         
         return results, self.cursor.description
         
+    def updateNWSLandForecastCache(self, foreData : tuple):
+        query = """
+            UPDATE SG_Land_Forecast_Cache
+            SET FetchTimestamp = ?,
+            FCStart = ?,
+            FCEnd = ?,
+            RawJSON = ?
+            WHERE StationID = ?
+        """
+        
+        self.cursor.execute(query, foreData)
+        self.DBConn.commit()
+        
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
         
