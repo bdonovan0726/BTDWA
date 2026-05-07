@@ -1,0 +1,41 @@
+import json
+import time
+import logging
+import os
+import argparse
+from NOAA.client import NOAAClient
+from Data.SQLite import SQLiteconn
+from datetime import datetime, timedelta, UTC
+from Stormglass.Stormclient import StormGlass
+
+parser = argparse.ArgumentParser()
+
+parser.add_argument(
+"-d", "--delay",
+default = 900,
+type = int,
+help = 'time delay between fetches'
+)
+
+log_dir = "Logs"
+os.makedirs(log_dir, exist_ok=True)
+
+timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+log_filename = os.path.join(log_dir, f"weather_service_{timestamp}.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    handlers=[
+        logging.FileHandler(log_filename),
+        logging.StreamHandler()
+    ]    
+)
+
+def main():
+    
+    SGCli = StormGlass('keys.apk')
+    SGCli.getStormglassForecast(26.12,-80.08)
+    
+if __name__ == "__main__":
+    main()

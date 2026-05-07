@@ -2,6 +2,7 @@ import requests
 import yaml
 import arrow
 import json
+from datetime import datetime, timedelta, UTC
 
 class StormGlass:
 
@@ -9,16 +10,18 @@ class StormGlass:
         configs = yaml.safe_load(open(config_file))
         self.baseURL = 'https://api.stormglass.io/v2/weather/point'
         self.api_key = configs['stormglass']
-        self.reqParams = ['waveHeight', 'wavePeriod', 'waveDirection', 'windSpeed', 'windDirection',
-                          'airTemperature', 'pressure', 'cloudCover', 'currentDirection', 'currentSpeed',
-                          'gust', 'precipitation', 'swellDirection', 'rain', 'swellHeight', 'swellPeriod',
-                          'secondarySwellPeriod', 'secondarySwellDirection', 'secondarySwellHeight',
-                          'waterTemperature', 'surfaceTemperature', 'windWaveDirection', 'windWaveHeight',
-                          'windWavePeriod']
+        # self.reqParams = ['waveHeight', 'wavePeriod', 'waveDirection', 'windSpeed', 'windDirection',
+                          # 'airTemperature', 'pressure', 'cloudCover', 'currentDirection', 'currentSpeed',
+                          # 'gust', 'precipitation', 'swellDirection', 'rain', 'swellHeight', 'swellPeriod',
+                          # 'secondarySwellPeriod', 'secondarySwellDirection', 'secondarySwellHeight',
+                          # 'waterTemperature', 'surfaceTemperature', 'windWaveDirection', 'windWaveHeight',
+                          # 'windWavePeriod']
+        self.reqParams = ['airTemperature', 'pressure', 'cloudCover', 'gust', 'humidity',
+                            'precipitation', 'rain', 'snow', 'windDirection', 'windSpeed']
         
     def getStormglassForecast(self, lat : float, lon : float):
-        start = arrow.now().floor('day')
-        end = arrow.now().ceil('day')
+        start = datetime.now(UTC)
+        end = start + timedelta(hours=3)
         print(f'Begin: {start}')
         print(f'End: {end}')
         response = requests.get(self.baseURL,
