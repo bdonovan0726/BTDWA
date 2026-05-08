@@ -178,7 +178,8 @@ class SQLiteconn:
             SET FetchTimestamp = ?,
             FCStart = ?,
             FCEnd = ?,
-            RawJSON = ?
+            RawJSON = ?,
+            NormalizedData = ?
             WHERE StationID = ?
         """
         
@@ -187,6 +188,11 @@ class SQLiteconn:
         
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
+        
+    def runAdHocSelectQuery(self, query : str):
+        
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
         
     def __exit__(self, ev, et, evb):
         self.DBConn.close()

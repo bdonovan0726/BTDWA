@@ -44,7 +44,22 @@ def main():
                 end = start + timedelta(days=7)
                 print(f'Retrieving/updating forecast information for station: {station[0]}')
                 respJSON = SGCli.getStormglassForecast(station[3], station[4])
-                foreData = (int(time.time()), start, end, json.dumps(respJSON), station[0])
+                hourList = []
+                for h in respJSON['hours']:
+                    hrData = {}
+                    hrData['time'] = h['time']
+                    hrData['airTemperature'] = h['airTemperature']['sg']
+                    hrData['cloudCover'] = h['cloudCover']['sg']
+                    hrData['gust'] = h['gust']['sg']
+                    hrData['humidity'] = h['humidity']['sg']
+                    hrData['precipitation'] = h['precipitation']['sg']
+                    hrData['pressure'] = h['pressure']['sg']
+                    hrData['snow'] = h['snow']['sg']
+                    hrData['windDirection'] = h['windDirection']['sg']
+                    hrData['windSpeed'] = h['windSpeed']['sg']
+                    hourList.append(hrData)
+                    
+                foreData = (int(time.time()), start, end, json.dumps(respJSON), json.dumps(hourList), station[0])
                 SQConn.updateNWSLandForecastCache(foreData)
                 
             except Exception as e:
@@ -53,4 +68,21 @@ def main():
             
     
 if __name__ == "__main__":
-    main()
+    
+    try:
+        while True:
+            args = parser.parse_args()
+            logging.info(f"Starting SG Land forecast cache run with delay {args.delay} seconds..")
+            try:
+                main()
+            
+            except Exception as e:
+                logging.error(f'Encountered error in cache run: {e}')
+                
+            logging.info(f'Caching cycle complete, sleeping...')
+            time.sleep(args.delay)
+        
+    except Exception as e:
+        logging.error(f'Caught exception {e}')
+        logging.error(f'Shutting down gracefully')
+        
