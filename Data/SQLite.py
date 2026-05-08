@@ -172,6 +172,24 @@ class SQLiteconn:
         
         return results, self.cursor.description
         
+    def getStationCacheForecastData(self, statID : str):
+        query = """
+            SELECT
+            ch.FetchTimestamp,
+            ch.FCStart,
+            ch.FCEnd,
+            ch.NormalizedData,
+            st.Name as StationName,
+            st.Comments as StationComments
+            FROM SG_Land_Forecast_Cache as ch
+            INNER JOIN NWSStations as st
+            ON ch.StationID = st.StationID
+            WHERE ch.StationID = ?
+        """
+        
+        self.cursor.execute(query, (statID,))
+        return self.cursor.fetchone()
+        
     def updateNWSLandForecastCache(self, foreData : tuple):
         query = """
             UPDATE SG_Land_Forecast_Cache
