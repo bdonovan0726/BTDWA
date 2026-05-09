@@ -22,7 +22,7 @@ def get_forecast_for_station():
                     "Forecast End" : statForecast[2],
                     "Station Name" : statForecast[4],
                     "Station Description" : statForecast[5],
-                    "Forecast Data" : statForecast[3]}
+                    "Forecast Data" : json.loads(statForecast[3])}
         return jsonify(forecast)
         
 if __name__ == "__main__":
