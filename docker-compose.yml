@@ -1,13 +1,13 @@
 version: "3.9"
 
 services:
- cache:
+ land_obs_cache:
   build: .
   command: python NWS_land_cache_svc.py -d 180
   volumes:
   - ./Data:/app/Data
 
- api:
+ land_obs_api:
   build: .
   command: python NWS_api.py
   ports:
@@ -15,7 +15,13 @@ services:
   volumes:
   - ./Data:/app/Data
 
- forecast_api:
+ land_forecast_cache:
+  build: .
+  command: python NWS_land_forecast_svc.py -d 180
+  volumes:
+  - ./Data:/app/Data
+
+ land_forecast_api:
   build: .
   command: python SG_Land_Forecast_API.py
   ports:
