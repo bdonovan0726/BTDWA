@@ -3,7 +3,7 @@ version: "3.9"
 services:
  land_obs_cache:
   build: .
-  command: python NWS_land_cache_svc.py -d 180
+  command: python NWS_land_cache_svc.py -d 900
   volumes:
   - ./Data:/app/Data
 
@@ -17,7 +17,7 @@ services:
 
  land_forecast_cache:
   build: .
-  command: python NWS_land_forecast_svc.py -d 180
+  command: python NWS_land_forecast_svc.py -d 2400
   volumes:
   - ./Data:/app/Data
 
