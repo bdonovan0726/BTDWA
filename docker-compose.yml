@@ -10,8 +10,6 @@ services:
  land_obs_api:
   build: .
   command: python NWS_api.py
-  ports:
-  - "5000:5000"
   volumes:
   - ./Data:/app/Data
 
@@ -24,7 +22,5 @@ services:
  land_forecast_api:
   build: .
   command: python SG_Land_Forecast_API.py
-  ports:
-  - "5008:5008"
   volumes:
   - ./Data:/app/Data
