@@ -46,13 +46,13 @@ def main():
             for h in respJSON['hours']:
                 tPre= h['precipitation']['sg']
                 pTotal += tPre
-                if tPre > 0.5:
+                if tPre > 0.1:
                     lastPTime = h['time']
             
             try:
                 print(f'Saving precip to DB for station {s[0]}')
                 SQConn.updateSGHistoricalPrecip((respJSON['meta']['start'], respJSON['meta']['end'],
-                                                pTotal, 0, 0, json.dumps(respJSON), s[0]))
+                                                pTotal, 0, 0, json.dumps(respJSON), lastPTime, s[0]))
             except Exception as e:
                 logging.error(f'Received error : {e}')
                 continue

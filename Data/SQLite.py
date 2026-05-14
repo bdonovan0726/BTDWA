@@ -212,12 +212,23 @@ class SQLiteconn:
             TotalPrecip = ?,
             TotalSnow = ?,
             TotalRain = ?,
-            RawJSON = ?
+            RawJSON = ?,
+            LastPrecip = ?
             WHERE StationID = ?
         """
         
         self.cursor.execute(query, data)
         self.DBConn.commit()
+        
+    def getSGHistoricalPrecipData(self, stationID : str):
+        query = """
+            SELECT *
+            FROM SG_Precip_History
+            WHERE StationID = ?
+        """
+        
+        self.cursor.execute(query, (stationID,))
+        return self.cursor.fetchone()
         
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
