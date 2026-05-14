@@ -204,6 +204,21 @@ class SQLiteconn:
         self.cursor.execute(query, foreData)
         self.DBConn.commit()
         
+    def updateSGHistoricalPrecip(self, data : tuple):
+        query = """
+            UPDATE SG_Precip_History
+            SET Start = ?,
+            End = ?,
+            TotalPrecip = ?,
+            TotalSnow = ?,
+            TotalRain = ?,
+            RawJSON = ?
+            WHERE StationID = ?
+        """
+        
+        self.cursor.execute(query, data)
+        self.DBConn.commit()
+        
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
         
