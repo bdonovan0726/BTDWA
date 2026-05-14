@@ -32,3 +32,19 @@ services:
   - "5008:5008"
   volumes:
   - ./Data:/app/Data
+  
+ historical_precip_cache:
+  restart: unless-stopped
+  build: .
+  command: python SG_historical_rainfall_svc.py -d 3600
+  volumes:
+  - ./Data:/app/Data
+  
+ historical_precip_api:
+  restart: unless-stopped
+  build: .
+  command: python SG_Precip_Historical_API.py
+  ports:
+  - "5012:5012"
+  volumes:
+  - ./Data:/app/Data

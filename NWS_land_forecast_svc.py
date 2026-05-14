@@ -21,7 +21,7 @@ log_dir = "Logs"
 os.makedirs(log_dir, exist_ok=True)
 
 timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-log_filename = os.path.join(log_dir, f"weather_service_{timestamp}.log")
+log_filename = os.path.join(log_dir, f"SG_Forecast_cache_service_{timestamp}.log")
 
 logging.basicConfig(
     level=logging.INFO,

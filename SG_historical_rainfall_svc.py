@@ -11,7 +11,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument(
 "-d", "--delay",
-default = 900,
+default = 3600,
 type = int,
 help = 'time delay between fetches'
 )
@@ -62,4 +62,20 @@ def main():
             #print(respJSON)
         
 if __name__ == "__main__":
-    main()
+    
+    try:
+        while True:
+            args = parser.parse_args()
+            logging.info(f"Starting SG Historical precipitation cache run with delay {args.delay} seconds..")
+            try:
+                main()
+            
+            except Exception as e:
+                logging.error(f'Encountered error in hist precip cache run: {e}')
+                
+            logging.info(f'Caching cycle complete, sleeping...')
+            time.sleep(args.delay)
+        
+    except Exception as e:
+        logging.error(f'Caught exception {e}')
+        logging.error(f'Shutting down gracefully')
