@@ -42,13 +42,49 @@ def main():
         for stat in SQConn.getWaterStations():
             print(f'Station: {stat[0]}')
             buoyList = []
+            tempDict = {
+                        "WDIR" : [],
+                        "WSPD" : [],
+                        "GST" : [],
+                        "WVHT" : [],
+                        "DPD" : [],
+                        "APD" : [],
+                        "MWD" : [],
+                        "PRES" : [],
+                        "ATMP" : [],
+                        "WTMP" : []
+                        }
+
             for buoy in SQConn.getBuoysForWaterStation(stat[0]):
                 buoyList.append(buoy[1])
-                print(buoy[1])
-
-            bRawData = requests.get(NDBC_URL.format(buoy[1]))
-            headers = bRawData.text.splitlines()
-            print(headers[0])
+                print(f'Getting buoy {buoy[1]})
+                bRawData = requests.get(NDBC_URL.format(buoy[1]))
+                bLines = bRawData.text.splitlines()
+                headers = bLines[0].split()
+                data = bLines[2].split()
+                tempData = dict(zip(headers, data))
+                if tempData["WDIR"] != "MM":
+                    tempDict["WDIR"].append(float(tempData["WDIR"]))
+                if tempData["WSPD"] != "MM":
+                    tempDict["WSPD"].append(float(tempData["WSPD"]))
+                if tempData["GST"] != "MM":
+                    tempDict["GST"].append(float(tempData["GST"]))
+                if tempData["WVHT"] != "MM":
+                    tempDict["WVHT"].append(float(tempData["WVHT"]))
+                if tempData["DPD"] != "MM":
+                    tempDict["DPD"].append(float(tempData["DPD"]))
+                if tempData["APD"] != "MM":
+                    tempDict["APD"].append(float(tempData["APD"]))
+                if tempData["MWD"] != "MM":
+                    tempDict["MWD"].append(float(tempData["MWD"]))
+                if tempData["PRES"] != "MM":
+                    tempDict["PRES"].append(float(tempData["PRES"]))
+                if tempData["ATMP"] != "MM":
+                    tempDict["ATMP"].append(float(tempData["ATMP"]))
+                if tempData["WTMP"] != "MM":
+                    tempDict["WTMP"].append(float(tempData["WTMP"]))                    
+                
+            print(headers)
             
             
             
