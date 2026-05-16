@@ -230,6 +230,25 @@ class SQLiteconn:
         self.cursor.execute(query, (stationID,))
         return self.cursor.fetchone()
         
+    def getWaterStations(self):
+        query = """
+            SELECT *
+            FROM Water_Stations
+        """
+        
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
+        
+    def getBuoysForWaterStation(self, WS : str):
+        query = """
+            SELECT * 
+            FROM NDBCBuoys
+            WHERE WaterStation = ?
+        """
+        
+        self.cursor.execute(query, (WS,))
+        return self.cursor.fetchall()
+        
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
         
