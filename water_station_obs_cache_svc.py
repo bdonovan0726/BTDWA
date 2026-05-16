@@ -57,7 +57,7 @@ def main():
 
             for buoy in SQConn.getBuoysForWaterStation(stat[0]):
                 buoyList.append(buoy[1])
-                print(f'Getting buoy {buoy[1]})
+                print(f'Getting buoy {buoy[1]}')
                 bRawData = requests.get(NDBC_URL.format(buoy[1]))
                 bLines = bRawData.text.splitlines()
                 headers = bLines[0].split()
@@ -82,9 +82,11 @@ def main():
                 if tempData["ATMP"] != "MM":
                     tempDict["ATMP"].append(float(tempData["ATMP"]))
                 if tempData["WTMP"] != "MM":
-                    tempDict["WTMP"].append(float(tempData["WTMP"]))                    
+                    tempDict["WTMP"].append(float(tempData["WTMP"]))      
+
+            print(tempDict["WTMP"])
                 
-            print(headers)
+            #print(headers)
             
             
             
