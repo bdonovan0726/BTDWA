@@ -249,6 +249,27 @@ class SQLiteconn:
         self.cursor.execute(query, (WS,))
         return self.cursor.fetchall()
         
+    def updateWaterStationCache(self, data : tuple):
+        query = """
+            UPDATE Water_Obs_Cache
+            SET UpdTimestamp = ?,
+            ObsTimestamp = ?,
+            WaveHeight = ?,
+            DomPeriod = ?,
+            APeriod = ?,
+            WaveDirection = ?,
+            WindDir = ?,
+            WindSpeed = ?,
+            WindGust = ?,
+            WaterTemp = ?,
+            AirTemp = ?,
+            Pressure = ?
+            WHERE StationID = ?
+        """
+        
+        self.cursor.execute(query, data)
+        self.DBConn.commit()
+        
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}
         

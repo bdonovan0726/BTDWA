@@ -55,6 +55,8 @@ def main():
                         "WTMP" : []
                         }
 
+            timeStamps = {}
+
             for buoy in SQConn.getBuoysForWaterStation(stat[0]):
                 buoyList.append(buoy[1])
                 print(f'Getting buoy {buoy[1]}')
@@ -63,6 +65,7 @@ def main():
                 headers = bLines[0].split()
                 data = bLines[2].split()
                 tempData = dict(zip(headers, data))
+                timeStamps[buoy[1]] = f"{tempData["#YY"]}-{tempData["MM"]}-{tempData["DD"]}-{tempData["hh"]}-{tempData["mm"]}"
                 if tempData["WDIR"] != "MM":
                     tempDict["WDIR"].append(float(tempData["WDIR"]))
                 if tempData["WSPD"] != "MM":
@@ -95,8 +98,15 @@ def main():
             for k, v in tempDict.items():
                 print(f'Key: {k} = Value: {v}')
             
-                
+            for k, v in timeStamps.items():
+                print(f'Key: {k} = Value: {v}')
             #print(headers)
+            
+            sqData = (int(time.time()), json.dumps(timeStamps), tempDict["WVHT"], tempDict["DPD"], tempDict["APD"],
+                      tempDict["MWD"], tempDict["WDIR"], tempDict["WSPD"], tempDict["GST"], tempDict["WTMP"],
+                      tempDict["ATMP"], tempDict["PRES"], stat[0])
+            print(f"Updating cache DB for station: {stat[0]}")          
+            SQConn.updateWaterStationCache(sqData)
             
             
             
