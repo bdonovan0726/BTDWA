@@ -84,7 +84,17 @@ def main():
                 if tempData["WTMP"] != "MM":
                     tempDict["WTMP"].append(float(tempData["WTMP"]))      
 
-            print(tempDict["WTMP"])
+            for k, v in tempDict.items():
+                print(f'Key: {k} = Value: {v}')
+                
+            for k, v in tempDict.items():
+                tempDict[k] = sum(tempDict[k])/len(tempDict[k])
+                
+            print("Now with averages:")
+            
+            for k, v in tempDict.items():
+                print(f'Key: {k} = Value: {v}')
+            
                 
             #print(headers)
             
