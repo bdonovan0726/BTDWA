@@ -248,27 +248,59 @@ class SQLiteconn:
         
         self.cursor.execute(query, (WS,))
         return self.cursor.fetchall()
-        
-    def updateWaterStationCache(self, data : tuple):
+
+    def updateWaterForecastCache(self, data : tuple):
         query = """
-            UPDATE Water_Obs_Cache
+            UPDATE Water_Forecast_Cache
             SET UpdTimestamp = ?,
-            ObsTimestamp = ?,
-            WaveHeight = ?,
-            DomPeriod = ?,
-            APeriod = ?,
-            WaveDirection = ?,
-            WindDir = ?,
-            WindSpeed = ?,
-            WindGust = ?,
-            WaterTemp = ?,
-            AirTemp = ?,
-            Pressure = ?
+            StartTime = ?,
+            EndTime = ?,
+            RawJSON = ?,
+            Normalized = ?
             WHERE StationID = ?
         """
         
         self.cursor.execute(query, data)
         self.DBConn.commit()
+
+#####mothballed code for now-------------------------------------------------------------        
+    # def updateWaterStationCache(self, data : tuple):
+        # query = """
+            # UPDATE Water_Obs_Cache
+            # SET UpdTimestamp = ?,
+            # ObsTimestamp = ?,
+            # WaveHeight = ?,
+            # DomPeriod = ?,
+            # APeriod = ?,
+            # WaveDirection = ?,
+            # WindDir = ?,
+            # WindSpeed = ?,
+            # WindGust = ?,
+            # WaterTemp = ?,
+            # AirTemp = ?,
+            # Pressure = ?
+            # WHERE StationID = ?
+        # """
+        
+        # self.cursor.execute(query, data)
+        # self.DBConn.commit()
+        
+    # def getWaterStationCacheInfo(self):
+        # query = """
+            # SELECT ch.UpdTimestamp, ch.ObsTimestamp, ch.WaveHeight,
+            # ch.DomPeriod, ch.APeriod, ch.WaveDirection,
+            # ch.WindDir, ch.WindSpeed, ch.WindGust,
+            # ch.WaterTemp, ch.AirTemp, ch.Pressure,
+            # ws.FriendlyName, ws.Description
+            # FROM Water_Obs_Cache as ch
+            # INNER JOIN Water_Stations as ws
+            # on ch.StationID = ws.ID
+        # """
+        
+        # self.cursor.execute(query)
+        # results = self.cursor.fetchall()
+        
+        # return results, self.cursor.description
         
     def rowToDict(self, description, row):
         return {col[0]: row[idx] for idx, col in enumerate(description)}

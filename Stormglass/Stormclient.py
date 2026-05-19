@@ -21,6 +21,11 @@ class StormGlass:
                             
         self.reqPrecipParams = ['precipitation', 'rain', 'snow']
         
+        self.reqWaterForeParams = ['airTemperature', 'pressure', 'cloudCover', 'currentDirection', 'currentSpeed',
+                                    'gust', 'humidity', 'swellDirection', 'swellHeight',
+                                    'swellPeriod', 'waterTemperature', 'surfaceTemperature', 'waveDirection',
+                                    'waveHeight', 'wavePeriod', 'windDirection', 'windSpeed']
+        
     def getStormglassForecast(self, lat : float, lon : float, itvDays = 7):
         start = datetime.now(UTC)
         end = start + timedelta(days=itvDays)
@@ -28,7 +33,7 @@ class StormGlass:
         print(f'End: {end}')
         response = requests.get(self.baseURL,
         params = {
-            'lat' : lat,
+            'lat' : lat, 
             'lng' : lon,
             'params' : ','.join(self.reqParams),
             'start' : start.timestamp(),
@@ -53,6 +58,27 @@ class StormGlass:
             'lat' : lat,
             'lng' : lon,
             'params' : ','.join(self.reqPrecipParams),
+            'start' : start.timestamp(),
+            'end' : end.timestamp()
+        },
+        headers = {
+            'Authorization' : self.api_key
+        }
+        )
+        
+        json_data = response.json()
+        return json_data
+        
+    def getStormglassWaterForecast(self, lat : float, lon : float, itvDays = 10):
+        start = datetime.now(UTC)
+        end = start + timedelta(days=itvDays)
+        print(f'Begin: {start}')
+        print(f'End: {end}')
+        response = requests.get(self.baseURL,
+        params = {
+            'lat' : lat, 
+            'lng' : lon,
+            'params' : ','.join(self.reqWaterForeParams),
             'start' : start.timestamp(),
             'end' : end.timestamp()
         },
