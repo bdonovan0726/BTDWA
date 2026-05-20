@@ -262,6 +262,38 @@ class SQLiteconn:
         
         self.cursor.execute(query, data)
         self.DBConn.commit()
+        
+    def getWaterStationCacheForecastData(self, statID : str):
+        query = """
+            SELECT
+            ch.UpdTImestamp,
+            ch.StartTIme,
+            ch.EndTime,
+            ch.Normalized,
+            st.FriendlyName as StationName,
+            st.WindWarn as WindWarn,
+            st.OffshoreWindLower as OffShWindLower,
+            st.OffshoreWindUpper as OffShWindUpper,
+            st.OffShWindYellow as OffShWindYellow,
+            st.OffShWindRed as OffShWindRed
+            FROM Water_Forecast_Cache as ch
+            INNER JOIN Water_Stations as st
+            ON ch.StationID = st.ID
+            WHERE ch.StationID = ?
+        """
+        
+        self.cursor.execute(query, (statID,))
+        return self.cursor.fetchone()
+        
+    def getAllWaterStationsMeta(self):
+        query = """
+            SELECT id,
+            FriendlyName,
+            Description
+            FROM Water_Stations
+        """
+        self.cursor.execute(query)
+        return self.cursor.fetchall()
 
 #####mothballed code for now-------------------------------------------------------------        
     # def updateWaterStationCache(self, data : tuple):
