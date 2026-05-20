@@ -12,7 +12,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument(
 "-d", "--delay",
-default = 900,
+default = 4800,
 type = int,
 help = 'time delay between fetches'
 )
@@ -45,26 +45,26 @@ def main():
                 respJSON = SGCli.getStormglassWaterForecast(station[3], station[4])
                 #print(respJSON)
                 hourList = []
-                print(respJSON['hours'][0])
+                #print(respJSON['hours'][0])
                 for h in respJSON['hours']:
                     hrData = {}
                     hrData['time'] = h['time']
-                    hrData['airTemperature'] = h['airTemperature']['sg']
-                    hrData['cloudCover'] = h['cloudCover']['sg']
-                    hrData['currentDirection'] = h['currentDirection']['sg']
-                    hrData['currentSpeed'] = h['currentSpeed']['sg']                    
-                    hrData['gust'] = h['gust']['sg']
-                    hrData['humidity'] = h['humidity']['sg']
-                    hrData['pressure'] = h['pressure']['sg'] 
-                    hrData['surfaceTemperature'] = h['surfaceTemperature']['sg']
-                    hrData['swellDirection'] = h['swellDirection']['sg']                    
-                    hrData['swellHeight'] = h['swellHeight']['sg']
-                    hrData['swellPeriod'] = h['swellPeriod']['sg']
-                    hrData['waterTemperature'] = h['waterTemperature']['sg']
-                    hrData['waveHeight'] = h['waveHeight']['sg']
-                    hrData['wavePeriod'] = h['wavePeriod']['sg']
-                    hrData['windDirection'] = h['windDirection']['sg']
-                    hrData['windSpeed'] = h['windSpeed']['sg']
+                    hrData['airTemperature'] = h.get('airTemperature', {}).get('sg')
+                    hrData['cloudCover'] = h.get('cloudCover',{}).get('sg')
+                    hrData['currentDirection'] = h.get('currentDirection', {}).get('sg')
+                    hrData['currentSpeed'] = h.get('currentSpeed', {}).get('sg')                    
+                    hrData['gust'] = h.get('gust', {}).get('sg')
+                    hrData['humidity'] = h.get('humidity', {}).get('sg')
+                    hrData['pressure'] = h.get('pressure', {}).get('sg') 
+                    hrData['surfaceTemperature'] = h.get('surfaceTemperature', {}).get('sg')
+                    hrData['swellDirection'] = h.get('swellDirection', {}).get('sg')                    
+                    hrData['swellHeight'] = h.get('swellHeight', {}).get('sg')
+                    hrData['swellPeriod'] = h.get('swellPeriod', {}).get('sg')
+                    hrData['waterTemperature'] = h.get('waterTemperature', {}).get('sg')
+                    hrData['waveHeight'] = h.get('waveHeight', {}).get('sg')
+                    hrData['wavePeriod'] = h.get('wavePeriod', {}).get('sg')
+                    hrData['windDirection'] = h.get('windDirection', {}).get('sg')
+                    hrData['windSpeed'] = h.get('windSpeed', {}).get('sg')
                     hourList.append(hrData)
                     
                 foreData = (int(time.time()), start, end, json.dumps(respJSON), json.dumps(hourList), station[0])

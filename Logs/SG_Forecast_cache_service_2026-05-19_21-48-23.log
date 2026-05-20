@@ -1,0 +1,8 @@
+2026-05-19 21:48:23,143 - INFO - Starting SG Water forecast cache svc run with delay 900 seconds..
+2026-05-19 21:48:25,482 - ERROR - Received error in water cache svc: 'currentSpeed'
+2026-05-19 21:48:27,344 - ERROR - Received error in water cache svc: 'currentSpeed'
+2026-05-19 21:48:29,229 - ERROR - Received error in water cache svc: 'currentSpeed'
+2026-05-19 21:48:30,895 - ERROR - Received error in water cache svc: 'currentSpeed'
+2026-05-19 21:48:32,608 - ERROR - Received error in water cache svc: 'currentSpeed'
+2026-05-19 21:48:34,553 - ERROR - Received error in water cache svc: 'currentSpeed'
+2026-05-19 21:48:34,557 - INFO - Caching cycle complete, sleeping...
