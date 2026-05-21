@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marine Forecast</title>
+
+<style>
+
+body {
+    font-family: Arial, sans-serif;
+    background: #eef2f5;
+    margin: 0;
+    padding: 12px;
+    color: #222;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+.status {
+    text-align: center;
+    color: #666;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.station-card,
+.day-card {
+    background: white;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+}
+
+.station-header {
+    background: #0077cc;
+    color: white;
+    text-align: center;
+    padding: 14px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.station-content {
+    display: none;
+    padding: 12px;
+}
+
+.station-card.active .station-content {
+    display: block;
+}
+
+.section-title {
+    text-align: center;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.day-header {
+    background: #dfe6ed;
+    padding: 12px;
+    font-weight: bold;
+    text-align: center;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.day-content {
+    display: none;
+    padding: 10px;
+}
+
+.day-card.active .day-content {
+    display: block;
+}
+
+.forecast-row {
+    display: grid;
+    grid-template-columns: 60px 120px 70px 100px 90px;
+    align-items: center;
+    gap: 8px;
+
+    border: 2px solid #22c55e;
+    border-radius: 12px;
+
+    background: white;
+
+    padding: 10px;
+    margin-bottom: 10px;
+
+    font-size: 14px;
+}
+
+.forecast-row.yellow {
+    border-color: #eab308;
+}
+
+.forecast-row.red {
+    border-color: #ef4444;
+}
+
+.time {
+    font-weight: bold;
+}
+
+.loading {
+    text-align: center;
+    color: #666;
+    padding: 20px;
+}
+
+@media (max-width: 520px) {
+
+    .forecast-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        font-size: 13px;
+        padding: 10px;
+    }
+
+    .forecast-row span {
+        white-space: nowrap;
+    }
+
+    .time {
+        width: 55px;
+        font-weight: bold;
+    }
+
+    .station-header {
+        font-size: 18px;
+    }
+
+    .day-header {
+        font-size: 16px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Marine Forecast</h1>
+
+<div class="status" id="status">
+    Loading marine stations...
+</div>
+
+<div class="container" id="container"></div>
+
+<script>
+
+const WATER_STATIONS_URL = "http://localhost:5022/waterStations";
+const WATER_FORECAST_URL = "http://localhost:5022/waterStationForecast?station=";
+
+function msToMph(ms) {
+
+    if (ms == null || isNaN(ms)) {
+        return null;
+    }
+
+    return ms * 2.23694;
+}
+
+function metersToFeet(m) {
+
+    if (m == null || isNaN(m)) {
+        return null;
+    }
+
+    return m * 3.28084;
+}
+
+function cToF(c) {
+
+    if (c == null || isNaN(c)) {
+        return null;
+    }
+
+    return (c * 9/5) + 32;
+}
+
+function formatHour(isoTime) {
+
+    return new Date(isoTime).toLocaleTimeString([], {
+        hour: 'numeric'
+    });
+}
+
+function formatDay(isoTime) {
+
+    return new Date(isoTime).toLocaleDateString([], {
+        weekday: 'long',
+        month: 'long',
+        day: 'numeric'
+    });
+}
+
+function isToday(isoTime) {
+
+    const d = new Date(isoTime);
+    const now = new Date();
+
+    return d.getFullYear() === now.getFullYear()
+        && d.getMonth() === now.getMonth()
+        && d.getDate() === now.getDate();
+}
+
+function sameDay(a, b) {
+
+    const da = new Date(a);
+    const db = new Date(b);
+
+    return da.getFullYear() === db.getFullYear()
+        && da.getMonth() === db.getMonth()
+        && da.getDate() === db.getDate();
+}
+
+function isOffshoreDirection(direction, lower, upper) {
+
+    if (direction == null || isNaN(direction)) {
+        return false;
+    }
+
+    if (lower <= upper) {
+        return direction >= lower && direction <= upper;
+    }
+
+    return direction >= lower || direction <= upper;
+}
+
+function rowClass(hour, meta) {
+
+    const windMph = msToMph(hour.windSpeed);
+    const direction = hour.windDirection;
+
+    const offshore =
+        isOffshoreDirection(
+            direction,
+            meta["Offshore Wind Lower"],
+            meta["Offshore Wind Upper"]
+        );
+
+    if (!offshore || windMph == null) {
+        return "";
+    }
+
+    if (windMph >= meta["Offshore Wind Red"]) {
+        return "red";
+    }
+
+    if (windMph >= meta["Offshore Wind Yellow"]) {
+        return "yellow";
+    }
+
+    return "";
+}
+
+function buildForecastRow(hour, meta) {
+
+    const windMph = msToMph(hour.windSpeed);
+    const gustMph = msToMph(hour.gust);
+
+    const waveFt = metersToFeet(hour.waveHeight);
+
+    const waterF = cToF(hour.waterTemperature);
+
+    const windText =
+        windMph == null
+            ? "Wind N/A"
+            : `${Math.round(windMph)}mph G${gustMph == null ? "N/A" : Math.round(gustMph)}`;
+
+    const directionText =
+        hour.windDirection == null
+            ? "N/A"
+            : `${Math.round(hour.windDirection)}°`;
+
+    const waveText =
+        waveFt == null
+            ? "N/A"
+            : `${waveFt.toFixed(1)}ft@${hour.wavePeriod == null ? "?" : Math.round(hour.wavePeriod)}s`;
+
+    const waterText =
+        waterF == null
+            ? "N/A"
+            : `${Math.round(hour.waterTemperature)}°C / ${Math.round(waterF)}°F`;
+
+    return `
+        <div class="forecast-row ${rowClass(hour, meta)}">
+
+            <span class="time">
+                ${formatHour(hour.time)}
+            </span>
+
+            <span>
+                ${windText}
+            </span>
+
+            <span>
+                ${directionText}
+            </span>
+
+            <span>
+                ${waveText}
+            </span>
+
+            <span>
+                ${waterText}
+            </span>
+
+        </div>
+    `;
+}
+
+function groupByDay(hours) {
+
+    const groups = [];
+
+    hours.forEach(hour => {
+
+        let existing = groups.find(g => sameDay(g.date, hour.time));
+
+        if (!existing) {
+
+            existing = {
+                date: hour.time,
+                hours: []
+            };
+
+            groups.push(existing);
+        }
+
+        existing.hours.push(hour);
+    });
+
+    return groups;
+}
+
+async function loadStations() {
+
+    const container = document.getElementById("container");
+    const status = document.getElementById("status");
+
+    try {
+
+        const res = await fetch(WATER_STATIONS_URL);
+
+        const stations = await res.json();
+
+        container.innerHTML = stations.map(station => `
+
+            <div class="station-card"
+                 data-station="${station["Station ID"]}">
+
+                <div class="station-header"
+                     onclick="toggleStation(this)">
+
+                    ${station["Station Name"]}
+
+                </div>
+
+                <div class="station-content">
+
+                    <div class="loading">
+                        Loading forecast...
+                    </div>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+        status.innerText =
+            `Loaded ${stations.length} marine stations`;
+
+    }
+    catch(err) {
+
+        console.error(err);
+
+        status.innerText =
+            "Failed to load marine stations";
+    }
+}
+
+async function toggleStation(header) {
+
+    const card = header.parentElement;
+
+    const content =
+        card.querySelector(".station-content");
+
+    const stationID =
+        card.dataset.station;
+
+    card.classList.toggle("active");
+
+    if (!card.classList.contains("active")) {
+        return;
+    }
+
+    if (card.dataset.loaded === "true") {
+        return;
+    }
+
+    try {
+
+        const res =
+            await fetch(
+                `${WATER_FORECAST_URL}${stationID}`
+            );
+
+        const forecast = await res.json();
+
+        const hours =
+            forecast["Forecast Data"] || [];
+
+        const todayHours =
+            hours.filter(h => isToday(h.time));
+
+        const futureHours =
+            hours.filter(h => !isToday(h.time));
+
+        const dayGroups =
+            groupByDay(futureHours);
+
+        const todayHtml = `
+
+            <div class="section-title">
+                Remaining Today
+            </div>
+
+            ${
+                todayHours.length
+                    ? todayHours
+                        .map(h => buildForecastRow(h, forecast))
+                        .join("")
+                    : "<div class='loading'>No forecast remaining for today</div>"
+            }
+
+        `;
+
+        const daysHtml = dayGroups.map(group => {
+
+            const sampledHours =
+                group.hours.filter(
+                    (_, index) => index % 3 === 0
+                );
+
+            return `
+
+                <div class="day-card">
+
+                    <div class="day-header"
+                         onclick="toggleDay(this)">
+
+                        ${formatDay(group.date)}
+
+                    </div>
+
+                    <div class="day-content">
+
+                        ${
+                            sampledHours
+                                .map(h => buildForecastRow(h, forecast))
+                                .join("")
+                        }
+
+                    </div>
+
+                </div>
+
+            `;
+        }).join("");
+
+        content.innerHTML =
+            todayHtml + daysHtml;
+
+        card.dataset.loaded = "true";
+
+    }
+    catch(err) {
+
+        console.error(err);
+
+        content.innerHTML =
+            "<div class='loading'>Forecast unavailable</div>";
+    }
+}
+
+function toggleDay(header) {
+
+    const card = header.parentElement;
+
+    card.classList.toggle("active");
+}
+
+loadStations();
+
+</script>
+
+</body>
+</html>
