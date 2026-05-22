@@ -1,8 +1,0 @@
-2026-05-07 21:04:26,520 - INFO - Starting SG Land forecast cache run with delay 900 seconds..
-2026-05-07 21:04:27,953 - ERROR - Received error: name 'htData' is not defined
-2026-05-07 21:04:29,165 - ERROR - Received error: name 'htData' is not defined
-2026-05-07 21:04:30,496 - ERROR - Received error: name 'htData' is not defined
-2026-05-07 21:04:31,784 - ERROR - Received error: name 'htData' is not defined
-2026-05-07 21:04:33,053 - ERROR - Received error: name 'htData' is not defined
-2026-05-07 21:04:34,384 - ERROR - Received error: name 'htData' is not defined
-2026-05-07 21:04:34,401 - INFO - Caching cycle complete, sleeping...

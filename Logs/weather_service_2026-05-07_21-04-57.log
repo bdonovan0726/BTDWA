@@ -1,8 +1,0 @@
-2026-05-07 21:04:57,065 - INFO - Starting SG Land forecast cache run with delay 900 seconds..
-2026-05-07 21:04:58,253 - ERROR - Received error: no such column: NormalizedJSON
-2026-05-07 21:04:59,487 - ERROR - Received error: no such column: NormalizedJSON
-2026-05-07 21:05:00,914 - ERROR - Received error: no such column: NormalizedJSON
-2026-05-07 21:05:02,244 - ERROR - Received error: no such column: NormalizedJSON
-2026-05-07 21:05:03,580 - ERROR - Received error: no such column: NormalizedJSON
-2026-05-07 21:05:05,075 - ERROR - Received error: no such column: NormalizedJSON
-2026-05-07 21:05:05,092 - INFO - Caching cycle complete, sleeping...

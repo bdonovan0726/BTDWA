@@ -1,8 +1,0 @@
-2026-05-18 23:54:01,174 - INFO - Starting SG Water forecast cache svc run with delay 900 seconds..
-2026-05-18 23:54:04,468 - ERROR - Received error in water cache svc: 'waterTemperature'
-2026-05-18 23:54:06,110 - ERROR - Received error in water cache svc: 'waterTemperature'
-2026-05-18 23:54:08,203 - ERROR - Received error in water cache svc: 'waterTemperature'
-2026-05-18 23:54:10,186 - ERROR - Received error in water cache svc: 'waterTemperature'
-2026-05-18 23:54:11,972 - ERROR - Received error in water cache svc: 'waterTemperature'
-2026-05-18 23:54:14,262 - ERROR - Received error in water cache svc: 'waterTemperature'
-2026-05-18 23:54:14,271 - INFO - Caching cycle complete, sleeping...
