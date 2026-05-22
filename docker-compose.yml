@@ -20,7 +20,7 @@ services:
  land_forecast_cache:
   restart: unless-stopped
   build: .
-  command: python NWS_land_forecast_svc.py -d 2400
+  command: python NWS_land_forecast_svc.py -d 3600
   volumes:
   - ./Data:/app/Data
 
@@ -30,6 +30,22 @@ services:
   command: python SG_Land_Forecast_API.py
   ports:
   - "5008:5008"
+  volumes:
+  - ./Data:/app/Data
+  
+ water_forecast_cache:
+  restart: unless-stopped
+  build: .
+  command: python SG_Water_forecast_svc.py -d 3600
+  volumes:
+  - ./Data:/app/Data
+  
+ water_forecast_api:
+  restart: unless-stopped
+  build: .
+  command: python Water_Forecast_API.py
+  ports:
+  - "5022:5022"
   volumes:
   - ./Data:/app/Data
   
