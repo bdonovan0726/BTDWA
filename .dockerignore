@@ -1,0 +1,8 @@
+__pycache__/
+*.log
+logs/
+.git/
+venv/
+NDBC/
+WeatherObjects/
+
