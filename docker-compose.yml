@@ -4,14 +4,14 @@ services:
  land_obs_cache:
   restart: unless-stopped
   build: .
-  command: python NWS_land_cache_svc.py -d 900
+  command: python NWS_Land_Cache_svc.py -d 900
   volumes:
   - ./Data:/app/Data
 
  land_obs_api:
   restart: unless-stopped
   build: .
-  command: python NWS_api.py
+  command: python NWS_API.py
   ports:
   - "5000:5000"
   volumes:
@@ -20,7 +20,7 @@ services:
  land_forecast_cache:
   restart: unless-stopped
   build: .
-  command: python NWS_land_forecast_svc.py -d 3600
+  command: python NWS_Land_Forecast_svc.py -d 3600
   volumes:
   - ./Data:/app/Data
 
@@ -36,14 +36,14 @@ services:
  water_forecast_cache:
   restart: unless-stopped
   build: .
-  command: python SG_Water_forecast_svc.py -d 3600
+  command: python SG_Water_Forecast_svc.py -d 3600
   volumes:
   - ./Data:/app/Data
   
  water_forecast_api:
   restart: unless-stopped
   build: .
-  command: python Water_Forecast_API.py
+  command: python SG_Water_Forecast_API.py
   ports:
   - "5022:5022"
   volumes:
@@ -52,7 +52,7 @@ services:
  historical_precip_cache:
   restart: unless-stopped
   build: .
-  command: python SG_historical_rainfall_svc.py -d 3600
+  command: python SG_Historical_Rainfall_svc.py -d 3600
   volumes:
   - ./Data:/app/Data
   
