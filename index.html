@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BTDWA Weather</title>
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #0f172a;
+        color: white;
+        margin: 0;
+        padding: 20px;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .nav-links {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .nav-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background-color: #334155;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        border: 1px solid #475569;
+        font-weight: bold;
+        transition: background-color 0.2s;
+    }
+
+    .nav-button:hover {
+        background-color: #475569;
+    }
+
+    .station-card {
+        background-color: #1e293b;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        overflow: hidden;
+        border: 1px solid #334155;
+    }
+
+    .station-header {
+        padding: 15px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        font-weight: bold;
+        background-color: #1e293b;
+        transition: background-color 0.2s;
+        position: relative;
+    }
+
+    .station-header:hover {
+        background-color: #334155;
+    }
+
+    .tooltip {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        background-color: #111827;
+        color: white;
+        padding: 8px;
+        border-radius: 6px;
+        top: 110%;
+        left: 15px;
+        z-index: 1000;
+        white-space: nowrap;
+        transition: opacity 0.2s;
+        font-size: 0.85rem;
+        border: 1px solid #475569;
+    }
+
+    .station-header:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    .station-content {
+        display: none;
+        padding: 15px;
+        border-top: 1px solid #334155;
+    }
+
+    .conditions-main {
+        text-align: center;
+        margin-bottom: 15px;
+    }
+
+    .conditions-desc {
+        font-size: 1.3rem;
+        font-weight: bold;
+        margin-bottom: 12px;
+    }
+
+    .conditions-line {
+        margin-bottom: 8px;
+        font-size: 0.95rem;
+    }
+
+    .obs-time {
+        font-size: 0.8rem;
+        color: #cbd5e1;
+        margin-top: 10px;
+    }
+
+    .forecast-title {
+        text-align: center;
+        margin-top: 20px;
+        margin-bottom: 12px;
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    .forecast-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+    }
+
+    .forecast-table th,
+    .forecast-table td {
+        padding: 8px;
+        text-align: center;
+        border-bottom: 1px solid #334155;
+    }
+
+    .forecast-table th {
+        background-color: #334155;
+    }
+
+    .loading {
+        text-align: center;
+        font-size: 1.2rem;
+        margin-top: 50px;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>BTDWA Weather</h1>
+
+<div class="nav-links">
+<a href="waterIndex.html"
+   class="nav-button"
+   target="_blank"
+   rel="noopener noreferrer">
+    Water Conditions
+</a>
+</div>
+
+<div id="weather-container">
+    <div class="loading">Loading weather data...</div>
+</div>
+
+<script>
+
+async function loadWeather() {
+
+    const container = document.getElementById("weather-container");
+
+    try {
+
+        const response = await fetch("/api/observations");
+        const data = await response.json();
+
+        container.innerHTML = "";
+
+        data.forEach(station => {
+
+            const tempC = station.Temp;
+            const tempF = (tempC * 9/5) + 32;
+
+            const windKMH = station.WindSpeed || 0;
+            const windMPH = windKMH * 0.621371;
+
+            const windDir = station.WindDir || 0;
+
+	    console.log(station);
+	    console.log(tempC);
+	    console.log(tempF);
+            const headerHTML = `
+                ${station.StationName} - ${station.Desc} - ${tempC.toFixed(1)}°C / ${tempF.toFixed(1)}°F
+                <div class="tooltip">${station.StationComments}</div>
+            `;
+
+            const card = document.createElement("div");
+            card.className = "station-card";
+
+            card.innerHTML = `
+                <div class="station-header">
+                    ${headerHTML}
+                </div>
+
+                <div class="station-content">
+
+                    <div class="conditions-main">
+
+                        <div class="conditions-desc">
+                            ${station.Desc}
+                        </div>
+
+                        <div class="conditions-line">
+                            Temp is ${tempC.toFixed(1)}°C / ${tempF.toFixed(1)}°F,
+                            with Humidity ${station.Humidity?.toFixed(0) || "N/A"}%
+                        </div>
+
+                        <div class="conditions-line">
+                            Winds ${windKMH.toFixed(1)} km/h / ${windMPH.toFixed(1)} mph
+                            at ${windDir.toFixed(0)}°
+                        </div>
+
+                        <div class="conditions-line">
+                            Pressure is ${station.Pressure || "N/A"}
+                        </div>
+
+                        <div class="conditions-line">
+                            Last precipitation: <span class="last-precip">Loading...</span>
+                        </div>
+
+                        <div class="conditions-line">
+                            Total precipitation last 7 days:
+                            <span class="total-precip">Loading...</span>
+                        </div>
+
+                        <div class="obs-time">
+                            Observed at ${station.ObsTimestamp}
+                        </div>
+
+                    </div>
+
+                    <div class="forecast-title">
+                        Next 6 Hours Forecast
+                    </div>
+
+                    <table class="forecast-table">
+                        <thead>
+                            <tr>
+                                <th>Time</th>
+                                <th>Temp</th>
+                                <th>Rain</th>
+                                <th>Wind</th>
+                            </tr>
+                        </thead>
+
+                        <tbody class="forecast-body">
+                            <tr>
+                                <td colspan="4">Loading forecast...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            `;
+
+            const header = card.querySelector(".station-header");
+            const content = card.querySelector(".station-content");
+
+            let loaded = false;
+
+            header.addEventListener("click", async () => {
+
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                    return;
+                }
+
+                content.style.display = "block";
+
+                if (loaded) {
+                    return;
+                }
+
+                loaded = true;
+
+                //
+                // FORECAST FETCH
+                //
+
+                try {
+
+                    const forecastResp = await fetch(
+                        `/api/forecast?station=${station.StationID}`
+                    );
+
+                    const forecastData = await forecastResp.json();
+
+                    const forecastBody = card.querySelector(".forecast-body");
+
+                    forecastBody.innerHTML = "";
+
+                    forecastData["Forecast Data"]
+                        .slice(0, 6)
+                        .forEach(hour => {
+
+                            const fTempC = hour.airTemperature;
+                            const fTempF = (fTempC * 9/5) + 32;
+
+                            const rain = hour.precipitation || 0;
+
+                            const fWindKMH = hour.windSpeed || 0;
+                            const fWindMPH = fWindKMH * 0.621371;
+
+                            const time = new Date(hour.time)
+                                .toLocaleTimeString([], {
+                                    hour: '2-digit',
+                                    minute: '2-digit'
+                                });
+
+                            const row = document.createElement("tr");
+
+                            row.innerHTML = `
+                                <td>${time}</td>
+                                <td>${fTempC.toFixed(1)}°C / ${fTempF.toFixed(1)}°F</td>
+                                <td>${rain.toFixed(1)} mm</td>
+                                <td>${fWindKMH.toFixed(1)} km/h / ${fWindMPH.toFixed(1)} mph</td>
+                            `;
+
+                            forecastBody.appendChild(row);
+
+                        });
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    card.querySelector(".forecast-body").innerHTML = `
+                        <tr>
+                            <td colspan="4">Forecast unavailable</td>
+                        </tr>
+                    `;
+                }
+
+                //
+                // HISTORICAL PRECIP FETCH
+                //
+
+                try {
+
+                    const histResp = await fetch(
+                        `/api/historicalPrecip?station=${station.StationID}`
+                    );
+
+                    const histData = await histResp.json();
+
+                    const lastPrecipEl = card.querySelector(".last-precip");
+                    const totalPrecipEl = card.querySelector(".total-precip");
+
+                    let lastPrecip = "None";
+
+                    if (histData["Last Precipitation"]) {
+
+                        lastPrecip = new Date(
+                            histData["Last Precipitation"]
+                        ).toLocaleString();
+
+                    }
+
+                    const totalPrecip =
+                        histData["Total Precipitation"] !== null
+                        ? `${histData["Total Precipitation"].toFixed(1)} mm`
+                        : "N/A";
+
+                    lastPrecipEl.textContent = lastPrecip;
+                    totalPrecipEl.textContent = totalPrecip;
+
+                } catch (err) {
+
+                    console.error(err);
+
+                    card.querySelector(".last-precip").textContent =
+                        "Unavailable";
+
+                    card.querySelector(".total-precip").textContent =
+                        "Unavailable";
+                }
+
+            });
+
+            container.appendChild(card);
+
+        });
+
+    } catch (err) {
+
+        console.error(err);
+
+        container.innerHTML = `
+            <div class="loading">
+                Failed to load weather data.
+            </div>
+        `;
+    }
+}
+
+loadWeather();
+
+</script>
+
+</body>
+</html>
