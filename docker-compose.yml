@@ -4,63 +4,79 @@ services:
  land_obs_cache:
   restart: unless-stopped
   build: .
-  command: python NWS_Land_Cache_svc.py -d 900
+  command: python -m Services.NWS_Land_Cache_svc -d 900
   volumes:
   - ./Data:/app/Data
 
  land_obs_api:
   restart: unless-stopped
   build: .
-  command: python NWS_API.py
-  ports:
-  - "5000:5000"
+  command: python -m API.NWS_API
+  expose:
+  - "5000"
   volumes:
   - ./Data:/app/Data
 
  land_forecast_cache:
   restart: unless-stopped
   build: .
-  command: python NWS_Land_Forecast_svc.py -d 3600
+  command: python -m Services.NWS_Land_Forecast_svc -d 14400
   volumes:
   - ./Data:/app/Data
 
  land_forecast_api:
   restart: unless-stopped
   build: .
-  command: python SG_Land_Forecast_API.py
-  ports:
-  - "5008:5008"
+  command: python -m API.SG_Land_Forecast_API
+  expose:
+  - "5008"
   volumes:
   - ./Data:/app/Data
   
  water_forecast_cache:
   restart: unless-stopped
   build: .
-  command: python SG_Water_Forecast_svc.py -d 3600
+  command: python -m Services.SG_Water_Forecast_svc -d 14400
   volumes:
   - ./Data:/app/Data
   
  water_forecast_api:
   restart: unless-stopped
   build: .
-  command: python SG_Water_Forecast_API.py
-  ports:
-  - "5022:5022"
+  command: python -m API.SG_Water_Forecast_API
+  expose:
+  - "5022"
   volumes:
   - ./Data:/app/Data
   
  historical_precip_cache:
   restart: unless-stopped
   build: .
-  command: python SG_Historical_Rainfall_svc.py -d 3600
+  command: python -m Services.SG_Historical_Rainfall_svc -d 3600
   volumes:
   - ./Data:/app/Data
   
  historical_precip_api:
   restart: unless-stopped
   build: .
-  command: python SG_Precip_Historical_API.py
-  ports:
-  - "5012:5012"
+  command: python -m API.SG_Precip_Historical_API
+  expose:
+  - "5012"
   volumes:
   - ./Data:/app/Data
+
+ nginx:
+  profiles:
+  - local
+  restart: unless-stopped
+  image: nginx:alpine
+  ports:
+  - "80:80"
+  volumes:
+  - ./frontend:/usr/share/nginx/html:ro
+  - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  depends_on:
+  - land_obs_api
+  - land_forecast_api
+  - historical_precip_api
+  - water_forecast_api

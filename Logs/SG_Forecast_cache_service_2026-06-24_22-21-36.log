@@ -1,0 +1,3 @@
+2026-06-24 22:21:36,456 - INFO - Starting SG Land forecast cache run with delay 900 seconds..
+2026-06-24 22:21:36,457 - ERROR - Encountered error in cache run: [Errno 2] No such file or directory: 'keys.apk'
+2026-06-24 22:21:36,458 - INFO - Caching cycle complete, sleeping...
