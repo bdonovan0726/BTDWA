@@ -1,0 +1,3 @@
+2026-06-24 22:25:20,748 - INFO - Starting SG Land forecast cache run with delay 900 seconds..
+2026-06-24 22:25:20,776 - ERROR - Encountered error in cache run: unable to open database file
+2026-06-24 22:25:20,776 - INFO - Caching cycle complete, sleeping...
