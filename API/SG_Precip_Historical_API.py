@@ -25,4 +25,4 @@ def get_forecast_for_station():
         return jsonify(precipData)
         
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port = 5012, debug=True)
+    app.run(host="0.0.0.0", port = 5012)
