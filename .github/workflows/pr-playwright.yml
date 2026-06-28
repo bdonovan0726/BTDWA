@@ -29,7 +29,7 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Build and start app stack
-        run: docker-compose --profile local up -d --build
+        run: docker compose --profile local up -d --build
 
       - name: Show running containers
         run: docker ps
