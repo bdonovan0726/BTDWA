@@ -66,8 +66,6 @@ services:
   - ./Data:/app/Data
 
  nginx:
-  profiles:
-  - local
   restart: unless-stopped
   image: nginx:alpine
   ports:
