@@ -66,15 +66,13 @@ services:
   - ./Data:/app/Data
 
  nginx:
-  profiles:
-  - local
   restart: unless-stopped
   image: nginx:alpine
   ports:
   - "80:80"
   volumes:
-  - ./frontend:/usr/share/nginx/html:ro
-  - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+  - ./Frontend:/usr/share/nginx/html:ro
+  - ./Docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
   depends_on:
   - land_obs_api
   - land_forecast_api
